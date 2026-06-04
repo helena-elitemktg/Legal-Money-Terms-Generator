@@ -233,7 +233,7 @@ body{font-family:var(--ff);background:var(--bg);color:var(--txt);font-size:14px;
         <input type="text" class="loc-inp" id="locInp"
           placeholder="cincinnati, seattle, los angeles, orange county&#8230;"
           autocomplete="off" spellcheck="false">
-        <span class="loc-note">City, county, or market name</span>
+        <span class="loc-note">Add one or more locations, separated by commas &mdash; e.g. los angeles, san diego, orange county</span>
       </div>
 
       <!-- National note — shown in national mode -->
@@ -3053,21 +3053,66 @@ var CORPUS_DATA =
       "display_name": "AI Compliance & Governance Law",
       "normalized_id": "ai_compliance_governance",
       "synonyms": [
-        "AI law attorney",
-        "technology compliance lawyer"
+        "ai compliance attorney",
+        "ai governance lawyer",
+        "artificial intelligence law attorney",
+        "cipa defense attorney",
+        "technology compliance lawyer",
+        "ai law attorney"
       ],
       "base_keyword_roots": [
         "ai compliance attorney",
+        "ai compliance lawyer",
+        "ai governance attorney",
         "ai governance lawyer",
+        "artificial intelligence compliance attorney",
+        "artificial intelligence compliance lawyer",
+        "ai law attorney",
+        "ai law lawyer",
+        "technology compliance attorney",
+        "technology compliance lawyer",
         "cipa defense attorney",
-        "trademark threat letter response lawyer",
-        "platform terms of service attorney"
+        "cipa defense lawyer"
       ],
-      "local_keyword_patterns": [],
+      "local_keyword_patterns": [
+        "ai compliance attorney {location}",
+        "{location} ai compliance attorney",
+        "ai compliance lawyer {location}",
+        "{location} ai compliance lawyer",
+        "ai governance attorney {location}",
+        "{location} ai governance attorney",
+        "ai governance lawyer {location}",
+        "{location} ai governance lawyer",
+        "artificial intelligence compliance attorney {location}",
+        "{location} artificial intelligence compliance attorney",
+        "artificial intelligence compliance lawyer {location}",
+        "{location} artificial intelligence compliance lawyer",
+        "ai law attorney {location}",
+        "{location} ai law attorney",
+        "ai law lawyer {location}",
+        "{location} ai law lawyer",
+        "technology compliance attorney {location}",
+        "{location} technology compliance attorney",
+        "technology compliance lawyer {location}",
+        "{location} technology compliance lawyer",
+        "cipa defense attorney {location}",
+        "{location} cipa defense attorney",
+        "cipa defense lawyer {location}",
+        "{location} cipa defense lawyer"
+      ],
       "national_keyword_patterns": [
         "ai compliance attorney",
+        "ai compliance lawyer",
+        "ai governance attorney",
         "ai governance lawyer",
-        "cipa defense attorney"
+        "artificial intelligence compliance attorney",
+        "artificial intelligence compliance lawyer",
+        "ai law attorney",
+        "ai law lawyer",
+        "technology compliance attorney",
+        "technology compliance lawyer",
+        "cipa defense attorney",
+        "cipa defense lawyer"
       ],
       "examples_found_in_money_terms": [
         "ai compliance attorney",
@@ -3075,8 +3120,8 @@ var CORPUS_DATA =
         "trademark threat letter response lawyer",
         "cipa defense attorney"
       ],
-      "notes": "Emerging area. National practice only. Found in Traverse Legal client data.",
-      "needs_manual_review": true
+      "notes": "Emerging practice area covering AI regulatory compliance, AI governance frameworks, CIPA (California Invasion of Privacy Act) defense, and general AI law advisory. National and local practice. Found in Traverse Legal client data.",
+      "needs_manual_review": false
     },
     {
       "parent_vertical": "Employment Law",
@@ -5200,6 +5245,21 @@ function genFor(entry, loc, locMode, opts) {
   return { kws: clean, noPatterns: noPatterns };
 }
 
+/* ── Parse location input into clean, deduplicated array ── */
+function parseLocs(raw) {
+  var parts = raw.split(",");
+  var seen  = {};
+  var out   = [];
+  for (var i = 0; i < parts.length; i++) {
+    var p = parts[i].trim();
+    if (p && !seen[p.toLowerCase()]) {
+      seen[p.toLowerCase()] = true;
+      out.push(p.toLowerCase());
+    }
+  }
+  return out;
+}
+
 /* ── Main generate function ── */
 function generate() {
   clearAlerts();
@@ -5209,24 +5269,26 @@ function generate() {
   for (var ri = 0; ri < radios.length; ri++) {
     if (radios[ri].checked) { locMode = radios[ri].value; break; }
   }
-  var loc = document.getElementById("locInp").value.trim();
+
+  /* Parse locations — array even for a single value */
+  var locs    = locMode === "local" ? parseLocs(document.getElementById("locInp").value) : [];
+  var locDisp = locs.join(", ");
 
   /* Validation */
   if (S.selected.length === 0) {
     showAlert("error", "Please select at least one practice area before generating."); return;
   }
-  if (locMode === "local" && !loc) {
-    showAlert("error", "Please enter a location for Local / Geo mode."); return;
+  if (locMode === "local" && locs.length === 0) {
+    showAlert("error", "Please enter at least one location for Local / Geo mode."); return;
   }
 
   var opts = {
-    dedupe:   document.getElementById("oDedupe").checked,
-    grouped:  document.getElementById("oGrouped").checked,
-
-    nearMe:   document.getElementById("oNearMe").checked
+    dedupe:  document.getElementById("oDedupe").checked,
+    grouped: document.getElementById("oGrouped").checked,
+    nearMe:  document.getElementById("oNearMe").checked
   };
 
-  /* Gather selected entries */
+  /* Gather selected entries in corpus order */
   var entries = [];
   for (var i = 0; i < LEGAL_KEYWORD_CORPUS.length; i++) {
     if (includes(S.selected, LEGAL_KEYWORD_CORPUS[i].normalized_id)) {
@@ -5237,23 +5299,43 @@ function generate() {
     showAlert("warning", "No matching practice areas found."); return;
   }
 
-  var results  = [];
-  var flatAll  = [];
+  var results = [];
+  var flatAll = [];
 
   for (var j = 0; j < entries.length; j++) {
-    var res = genFor(entries[j], loc, locMode, opts);
-    var kws = res.kws;
-    if (opts.dedupe) {
-      var seen = {}; var deduped = [];
-      for (var d = 0; d < kws.length; d++) {
-        if (!seen[kws[d]]) { seen[kws[d]] = true; deduped.push(kws[d]); }
+    var entry      = entries[j];
+    var entryKws   = [];
+    var noPatterns = false;
+
+    if (locMode === "local") {
+      /* Run genFor once per location and concatenate results */
+      for (var li = 0; li < locs.length; li++) {
+        var res = genFor(entry, locs[li], "local", opts);
+        if (res.noPatterns) noPatterns = true;
+        for (var ki = 0; ki < res.kws.length; ki++) entryKws.push(res.kws[ki]);
       }
-      kws = deduped;
+    } else {
+      /* National — single pass, location ignored */
+      var resN   = genFor(entry, "", "national", opts);
+      noPatterns = resN.noPatterns;
+      entryKws   = resN.kws;
     }
-    results.push({ e: entries[j], kws: kws, noPatterns: res.noPatterns });
+
+    /* Per-entry dedupe */
+    var kws = entryKws;
+    if (opts.dedupe) {
+      var seenE = {}; var dedupedE = [];
+      for (var d = 0; d < kws.length; d++) {
+        if (!seenE[kws[d]]) { seenE[kws[d]] = true; dedupedE.push(kws[d]); }
+      }
+      kws = dedupedE;
+    }
+
+    results.push({ e: entry, kws: kws, noPatterns: noPatterns });
     for (var f = 0; f < kws.length; f++) flatAll.push(kws[f]);
   }
 
+  /* Global dedupe across all practice areas */
   var allKws = flatAll;
   if (opts.dedupe) {
     var seenAll = {}; var dedupeAll = [];
@@ -5263,20 +5345,31 @@ function generate() {
     allKws = dedupeAll;
   }
 
-  S.lastResults = { results: results, allKws: allKws, locMode: locMode, loc: loc, opts: opts };
+  S.lastResults = { results: results, allKws: allKws, locMode: locMode,
+                    locs: locs, locDisp: locDisp, opts: opts };
   renderOut(S.lastResults);
 }
 
 /* ── Render output ── */
 function renderOut(data) {
-  var results = data.results;
-  var allKws  = data.allKws;
-  var locMode = data.locMode;
-  var loc     = data.loc;
+  var results  = data.results;
+  var allKws   = data.allKws;
+  var locMode  = data.locMode;
+  var locs     = data.locs    || [];
+  var locDisp  = data.locDisp || "";
+
+  /* Build the location badge label */
+  var locLabel;
+  if (locMode === "national") {
+    locLabel = "\uD83C\uDF10 National / No Geo";
+  } else if (locs.length === 1) {
+    locLabel = "\uD83D\uDCCD " + locDisp;
+  } else {
+    locLabel = "\uD83D\uDCCD " + locs.length + " locations: " + locDisp;
+  }
 
   document.getElementById("oNum").textContent  = allKws.length.toLocaleString();
-  document.getElementById("oMode").textContent =
-    locMode === "local" ? "\uD83D\uDCCD " + loc : "\uD83C\uDF10 National / No Geo";
+  document.getElementById("oMode").textContent = locLabel;
   document.getElementById("oAreas").textContent =
     results.length + " practice area" + (results.length !== 1 ? "s" : "");
 
@@ -5404,11 +5497,13 @@ function copyAll() {
 /* ── Download .txt ── */
 function dlTxt() {
   if (!S.lastResults) return;
-  var results = S.lastResults.results;
-  var locMode = S.lastResults.locMode;
-  var loc     = S.lastResults.loc;
-  var lines   = ["Legal Money Terms Export", "Generated: " + new Date().toLocaleDateString()];
-  lines.push("Mode: " + (locMode === "local" ? "Local -- " + loc : "National / No Geo"));
+  var results  = S.lastResults.results;
+  var locMode  = S.lastResults.locMode;
+  var locs     = S.lastResults.locs    || [];
+  var locDisp  = S.lastResults.locDisp || "";
+  var modeStr  = locMode === "local" ? "Local -- " + locDisp : "National / No Geo";
+  var lines    = ["Legal Money Terms Export", "Generated: " + new Date().toLocaleDateString()];
+  lines.push("Mode: " + modeStr);
   lines.push("--------------------------------------------------");
   lines.push("");
   for (var i = 0; i < results.length; i++) {
@@ -5420,7 +5515,10 @@ function dlTxt() {
     }
   }
   var txt  = lines.join("\n");
-  var lstr = locMode === "local" ? loc.replace(/\s+/g, "-") : "national";
+  /* Filename: use first location (or all if short), fall back to "national" */
+  var lstr = locMode === "local"
+    ? (locs.length === 1 ? locs[0] : locs[0] + "-plus-" + (locs.length - 1) + "-more").replace(/\s+/g, "-")
+    : "national";
   var fn   = "legal-keywords-" + lstr + "-" + new Date().toISOString().slice(0, 10) + ".txt";
   var blob = new Blob([txt], { type: "text/plain;charset=utf-8" });
   var url  = URL.createObjectURL(blob);
@@ -5471,9 +5569,9 @@ for (var lr = 0; lr < lmodeRadios.length; lr++) {
   });
 }
 
-/* Location input */
+/* Location input — no persistent state needed; parsed fresh on generate */
 document.getElementById("locInp").addEventListener("input", function() {
-  S.loc = this.value;
+  /* value read directly in generate() via parseLocs() */
 });
 
 /* Search input */
