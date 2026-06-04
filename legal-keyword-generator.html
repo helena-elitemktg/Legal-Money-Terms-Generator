@@ -1,0 +1,5527 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Legal Money Terms Generator</title>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#0A2342;--navy2:#1D3557;--bg:#F7F9FC;--accent:#E9F0F7;
+  --white:#FFFFFF;--txt:#0A2342;--txt2:#4A5568;--muted:#718096;
+  --border:#D1DCE8;--blight:#EAF0F8;
+  --warn:#92400E;--warn-bg:#FEF3C7;
+  --err:#9B1C1C;--err-bg:#FEE2E2;
+  --info:#1E40AF;--info-bg:#EFF6FF;
+  --ok:#166534;--ok-bg:#DCFCE7;
+  --sh:0 1px 3px rgba(10,35,66,.08),0 1px 2px rgba(10,35,66,.04);
+  --shm:0 4px 6px rgba(10,35,66,.07),0 2px 4px rgba(10,35,66,.06);
+  --r:5px;--rr:8px;
+  --ff:"Roboto",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  --fm:"Roboto Mono","Courier New",monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:var(--ff);background:var(--bg);color:var(--txt);font-size:14px;line-height:1.6;min-height:100vh}
+
+/* ── Header ── */
+.hdr{background:var(--navy);color:#fff;padding:18px 32px;display:flex;align-items:center;gap:14px;border-bottom:3px solid #143060}
+.hdr h1{font-size:20px;font-weight:700;letter-spacing:-.3px}
+.hdr p{font-size:12px;opacity:.6;font-weight:300}
+
+/* ── Layout ── */
+.main{max-width:1160px;margin:0 auto;padding:20px 28px 60px}
+
+/* ── Summary bar ── */
+.summary{background:var(--navy);border-radius:var(--rr);padding:11px 20px;display:flex;gap:20px;align-items:center;flex-wrap:wrap;margin-bottom:14px;box-shadow:var(--shm)}
+.stat{display:flex;flex-direction:column;flex-shrink:0}
+.stat-v{font-size:21px;font-weight:700;line-height:1.1;letter-spacing:-.4px;color:#fff}
+.stat-l{font-size:10px;opacity:.55;text-transform:uppercase;letter-spacing:.5px;color:#fff}
+.sdiv{width:1px;height:28px;background:rgba(255,255,255,.18);flex-shrink:0}
+.sum-list{flex:1;font-size:11px;color:rgba(255,255,255,.6);min-width:160px;line-height:1.65}
+.sum-list strong{color:rgba(255,255,255,.8);font-size:10px;text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:2px}
+
+/* ── Cards ── */
+.card{background:var(--white);border-radius:var(--rr);border:1px solid var(--blight);box-shadow:var(--sh);margin-bottom:14px}
+.card-hdr{padding:11px 18px;border-bottom:1px solid var(--blight);display:flex;align-items:center;justify-content:space-between;gap:10px}
+.card-title{font-size:11px;font-weight:700;color:var(--navy);text-transform:uppercase;letter-spacing:.8px;display:flex;align-items:center;gap:8px}
+.step-n{display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;border-radius:50%;background:var(--navy);color:#fff;font-size:10px;font-weight:700;flex-shrink:0}
+.card-body{padding:14px 18px}
+
+/* ── Segmented control ── */
+.seg{display:flex;border:1.5px solid var(--navy);border-radius:var(--r);overflow:hidden;flex-shrink:0}
+.seg input[type=radio]{display:none}
+.seg label{padding:7px 16px;font-size:12px;font-weight:500;cursor:pointer;color:var(--navy);transition:background .13s,color .13s;white-space:nowrap;user-select:none;border-right:1.5px solid var(--navy)}
+.seg label:last-child{border-right:none}
+.seg input[type=radio]:checked+label{background:var(--navy);color:#fff}
+
+/* ── Location field ── */
+.loc-section{display:flex;flex-direction:column;gap:5px;flex:1;min-width:260px}
+.fld-lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.7px;color:var(--txt2)}
+.loc-inp{padding:8px 12px;border:1.5px solid var(--border);border-radius:var(--r);font-family:var(--ff);font-size:13px;color:var(--txt);background:var(--white);transition:border-color .15s;width:100%}
+.loc-inp:focus{outline:none;border-color:var(--navy)}
+.loc-inp::placeholder{color:var(--muted);font-size:12px}
+.loc-note{font-size:10px;color:var(--muted)}
+/* Hide/show location block */
+.loc-block{display:flex;flex-direction:column;gap:5px;flex:1;min-width:260px;transition:opacity .2s}
+.loc-block.hidden{display:none}
+.national-msg{background:var(--info-bg);border:1px solid #BFDBFE;border-radius:var(--r);padding:8px 12px;font-size:12px;color:var(--info);display:none;align-items:center;gap:7px}
+.national-msg.show{display:flex}
+.ctrl-row{display:flex;gap:20px;align-items:flex-end;flex-wrap:wrap}
+.fld{display:flex;flex-direction:column;gap:5px}
+
+/* ── Search ── */
+.srch-wrap{position:relative;margin-bottom:14px}
+.srch-ico{position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:13px;pointer-events:none}
+.srch-inp{width:100%;padding:9px 36px 9px 32px;border:1.5px solid var(--border);border-radius:var(--r);font-family:var(--ff);font-size:13px;background:var(--bg);color:var(--txt);transition:border-color .15s,background .15s}
+.srch-inp:focus{outline:none;border-color:var(--navy);background:var(--white)}
+.srch-inp::placeholder{color:var(--muted)}
+.srch-clear{position:absolute;right:10px;top:50%;transform:translateY(-50%);color:var(--muted);cursor:pointer;border:none;background:none;font-size:15px;display:none;padding:2px 4px;border-radius:3px}
+.srch-clear:hover{color:var(--navy);background:var(--accent)}
+.srch-clear.show{display:block}
+
+/* ── Vertical chips ── */
+.chips-lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.7px;color:var(--txt2);margin-bottom:7px}
+.vert-chips{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:16px}
+.vchip{display:inline-flex;align-items:center;gap:5px;padding:7px 14px;border:1.5px solid var(--border);border-radius:20px;cursor:pointer;font-family:var(--ff);font-size:12px;font-weight:500;background:var(--white);color:var(--txt2);transition:all .13s;user-select:none;white-space:nowrap}
+.vchip:hover{border-color:var(--navy);color:var(--navy);background:var(--accent)}
+.vchip.active{background:var(--navy);color:#fff;border-color:var(--navy)}
+.vchip .vcnt{font-size:10px;opacity:.6;margin-left:2px}
+.vchip.active .vcnt{opacity:.65}
+
+/* ── Selection bar ── */
+.sel-bar{display:none;align-items:center;gap:6px;margin-bottom:12px;flex-wrap:wrap}
+.sel-bar.show{display:flex}
+.sel-lbl{font-size:11px;color:var(--muted);margin-left:auto}
+
+/* ── PA panels ── */
+.pa-panels{display:flex;flex-direction:column;gap:8px}
+.pa-panel{border:1px solid var(--blight);border-radius:var(--r);overflow:hidden}
+.pa-panel-hdr{display:flex;align-items:center;padding:8px 13px;background:var(--accent);gap:7px;flex-wrap:wrap}
+.pa-panel-name{font-size:11px;font-weight:700;color:var(--navy);text-transform:uppercase;letter-spacing:.5px;flex:1}
+.sel-badge{font-size:10px;background:var(--navy);color:#fff;border-radius:10px;padding:1px 8px;font-weight:700;flex-shrink:0;white-space:nowrap}
+.pa-panel-body{padding:10px 13px;background:var(--white)}
+.pa-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:3px 10px}
+.pa-cb{display:flex;align-items:center;gap:6px;padding:5px 6px;border-radius:var(--r);cursor:pointer;transition:background .1s}
+.pa-cb:hover{background:var(--accent)}
+.pa-cb input[type=checkbox]{width:14px;height:14px;appearance:none;-webkit-appearance:none;border:1.5px solid var(--border);border-radius:3px;background:var(--white);cursor:pointer;position:relative;flex-shrink:0;transition:border-color .13s,background .13s}
+.pa-cb input[type=checkbox]:checked{background:var(--navy);border-color:var(--navy)}
+.pa-cb input[type=checkbox]:checked::after{content:"";position:absolute;left:2px;top:0;width:6px;height:3.5px;border-left:2px solid #fff;border-bottom:2px solid #fff;transform:rotate(-45deg)}
+.pa-cb .lbl{font-size:12.5px;color:var(--txt);line-height:1.3}
+.pa-cb input:checked~.lbl{color:var(--navy);font-weight:500}
+.rev-dot{width:5px;height:5px;border-radius:50%;background:var(--warn);flex-shrink:0;margin-left:2px}
+
+/* ── Empty state ── */
+.empty-state{text-align:center;padding:32px 20px;color:var(--muted)}
+.es-icon{font-size:28px;display:block;margin-bottom:8px;opacity:.4}
+.es-txt{font-size:13px;font-weight:500}
+.es-sub{font-size:12px;opacity:.7;margin-top:4px;display:block}
+
+/* ── Settings ── */
+.settings-row{display:flex;align-items:flex-start;gap:24px;flex-wrap:wrap}
+.sck{display:flex;align-items:flex-start;gap:7px;cursor:pointer;font-size:12.5px;color:var(--txt);user-select:none}
+.sck input[type=checkbox]{width:14px;height:14px;appearance:none;-webkit-appearance:none;border:1.5px solid var(--border);border-radius:3px;background:var(--white);cursor:pointer;position:relative;flex-shrink:0;margin-top:2px;transition:border-color .13s,background .13s}
+.sck input[type=checkbox]:checked{background:var(--navy);border-color:var(--navy)}
+.sck input[type=checkbox]:checked::after{content:"";position:absolute;left:2px;top:0;width:6px;height:3.5px;border-left:2px solid #fff;border-bottom:2px solid #fff;transform:rotate(-45deg)}
+.sck-wrap{display:flex;flex-direction:column;gap:1px}
+.sck-note{font-size:10px;color:var(--muted)}
+.btn-gen-wrap{display:flex;justify-content:center;padding-top:12px;border-top:1px solid var(--blight);margin-top:14px}
+.btn-gen{background:var(--navy);color:#fff;padding:11px 36px;font-size:15px;font-weight:700;border-radius:var(--rr);box-shadow:0 4px 14px rgba(10,35,66,.28);cursor:pointer;border:none;font-family:var(--ff);transition:all .14s;letter-spacing:.2px}
+.btn-gen:hover{background:#0d2d56;box-shadow:0 6px 18px rgba(10,35,66,.36);transform:translateY(-1px)}
+.btn-gen:active{transform:translateY(0);box-shadow:0 2px 6px rgba(10,35,66,.22)}
+
+/* ── Utility buttons ── */
+.btn{display:inline-flex;align-items:center;gap:5px;padding:5px 11px;border-radius:var(--r);font-family:var(--ff);font-size:11.5px;font-weight:500;cursor:pointer;transition:all .13s;white-space:nowrap;border:none;line-height:1.4}
+.btn-ghost{background:transparent;color:var(--txt2);border:1px solid var(--border);padding:4px 10px;font-size:11px}
+.btn-ghost:hover{background:var(--accent);color:var(--navy);border-color:var(--navy)}
+
+/* ── Alerts ── */
+.alert{border-radius:var(--r);padding:9px 13px;font-size:12.5px;margin-bottom:10px;display:flex;align-items:flex-start;gap:7px}
+.alert-error{background:var(--err-bg);color:var(--err);border:1px solid #FCA5A5}
+.alert-warning{background:var(--warn-bg);color:var(--warn);border:1px solid #FCD34D}
+.alert-info{background:var(--info-bg);color:var(--info);border:1px solid #BFDBFE}
+
+/* ── Output ── */
+.out-wrap{display:none;margin-top:4px}
+.out-wrap.show{display:block}
+.out-stats{background:var(--navy);color:#fff;border-radius:var(--rr) var(--rr) 0 0;padding:11px 18px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.out-num{font-size:26px;font-weight:700;line-height:1;letter-spacing:-.5px}
+.out-lbl-sm{font-size:11px;opacity:.6;margin-right:4px}
+.out-tag{font-size:11px;background:rgba(255,255,255,.14);border-radius:10px;padding:2px 9px;white-space:nowrap}
+.out-acts{margin-left:auto;display:flex;gap:6px;flex-shrink:0;flex-wrap:wrap}
+.out-body{background:var(--white);border:1px solid var(--blight);border-top:none;border-radius:0 0 var(--rr) var(--rr)}
+.out-grp{border-bottom:1px solid var(--blight)}
+.out-grp:last-child{border-bottom:none}
+.out-grp-hdr{display:flex;align-items:center;padding:9px 15px;background:var(--bg);gap:7px;flex-wrap:wrap}
+.out-grp-name{font-size:13px;font-weight:700;color:var(--navy)}
+.out-grp-vert{font-size:10px;color:var(--muted);background:var(--accent);border-radius:10px;padding:1px 7px}
+.rev-badge{font-size:10px;color:var(--warn);background:var(--warn-bg);border-radius:10px;padding:1px 7px;font-weight:600}
+.notes-btn{font-size:10px;color:var(--muted);cursor:pointer;background:none;border:1px solid var(--border);padding:1px 7px;border-radius:10px;font-family:var(--ff);transition:all .12s}
+.notes-btn:hover{background:var(--accent);color:var(--navy);border-color:var(--navy)}
+.grp-copy-btn{margin-left:auto;flex-shrink:0}
+.out-notes{display:none;font-size:11.5px;color:var(--warn);background:var(--warn-bg);border-left:3px solid #D97706;padding:7px 14px;margin:0 15px}
+.out-notes.show{display:block}
+.out-kws{padding:9px 15px;font-family:var(--fm);font-size:12.5px;line-height:1.95;color:var(--txt);white-space:pre-wrap;word-break:break-word}
+.out-empty-msg{padding:9px 15px;font-size:12px;color:var(--muted);font-style:italic}
+
+/* ── Responsive ── */
+@media(max-width:768px){
+  .hdr{padding:14px 18px;flex-wrap:wrap}
+  .main{padding:14px 14px 40px}
+  .ctrl-row{flex-direction:column;gap:12px}
+  .loc-inp{min-width:0}
+  .pa-grid{grid-template-columns:repeat(auto-fill,minmax(170px,1fr))}
+  .out-stats{gap:8px}
+  .settings-row{flex-direction:column;gap:10px}
+  .summary{gap:14px}
+}
+@media(max-width:480px){
+  .pa-grid{grid-template-columns:1fr 1fr}
+  .vert-chips{gap:5px}
+  .vchip{font-size:11px;padding:6px 11px}
+}
+</style>
+</head>
+<body>
+
+<header class="hdr">
+  <span style="font-size:20px">&#9878;</span>
+  <div>
+    <h1>Legal Money Terms Generator</h1>
+    <p>Generate local, national, English, and Spanish legal keywords from our internal money-term corpus.</p>
+  </div>
+</header>
+
+<main class="main">
+
+<!-- Summary -->
+<div class="summary">
+  <div class="stat"><span class="stat-v" id="sPAs">111</span><span class="stat-l">Practice Areas</span></div>
+  <div class="sdiv"></div>
+  <div class="stat"><span class="stat-v" id="sTerms">2,406</span><span class="stat-l">Terms in Corpus</span></div>
+  <div class="sdiv"></div>
+  <div class="stat"><span class="stat-v" id="sVerts">10</span><span class="stat-l">Verticals</span></div>
+  <div class="sdiv"></div>
+  <div class="sum-list">
+    <strong>Verticals</strong>
+    <span id="sVertList">Loading...</span>
+  </div>
+</div>
+
+<!-- STEP 1 -->
+<div class="card">
+  <div class="card-hdr">
+    <div class="card-title"><span class="step-n">1</span> Configure Mode</div>
+    <span id="gSelCnt" style="font-size:11px;color:var(--muted)"></span>
+  </div>
+  <div class="card-body">
+    <div class="ctrl-row">
+
+      <div class="fld">
+        <span class="fld-lbl">Location Mode</span>
+        <div class="seg">
+          <input type="radio" name="lmode" id="mLocal" value="local" checked>
+          <label for="mLocal">&#128205; Local / Geo</label>
+          <input type="radio" name="lmode" id="mNational" value="national">
+          <label for="mNational">&#127760; National / No Geo</label>
+        </div>
+      </div>
+
+      <!-- Location block — hidden in national mode -->
+      <div class="loc-block" id="locBlock">
+        <span class="fld-lbl">Location</span>
+        <input type="text" class="loc-inp" id="locInp"
+          placeholder="cincinnati, seattle, los angeles, orange county&#8230;"
+          autocomplete="off" spellcheck="false">
+        <span class="loc-note">City, county, or market name</span>
+      </div>
+
+      <!-- National note — shown in national mode -->
+      <div class="national-msg" id="natMsg">
+        &#127760; National mode selected. Keywords will be generated without a location.
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- STEP 2 -->
+<div class="card">
+  <div class="card-hdr">
+    <div class="card-title"><span class="step-n">2</span> Select Practice Areas</div>
+  </div>
+  <div class="card-body">
+
+    <!-- Search -->
+    <div class="srch-wrap">
+      <span class="srch-ico">&#128269;</span>
+      <input type="text" class="srch-inp" id="srchInp"
+        placeholder="Search: personal injury, DUI, abogado, estate planning, malpractice, lesiones&#8230;"
+        autocomplete="off">
+      <button class="srch-clear" id="srchClear" title="Clear search">&#10005;</button>
+    </div>
+
+    <!-- Vertical chips -->
+    <div class="chips-lbl">Select a Vertical to Browse Practice Areas</div>
+    <div class="vert-chips" id="vertChips"></div>
+
+    <!-- Selection bar -->
+    <div class="sel-bar" id="selBar">
+      <button class="btn btn-ghost" id="clearSelBtn">Clear All Selections</button>
+      <span class="sel-lbl" id="selLbl">0 selected</span>
+    </div>
+
+    <div id="alertBox"></div>
+
+    <!-- PA panels rendered here -->
+    <div id="paBox">
+      <div class="empty-state">
+        <span class="es-icon">&#9757;</span>
+        <span class="es-txt">Select a vertical above to browse practice areas.</span>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- STEP 3 -->
+<div class="card">
+  <div class="card-hdr">
+    <div class="card-title"><span class="step-n">3</span> Options &amp; Generate</div>
+  </div>
+  <div class="card-body">
+    <div class="settings-row">
+      <label class="sck">
+        <input type="checkbox" id="oDedupe" checked>
+        <div class="sck-wrap"><span>Deduplicate keywords</span></div>
+      </label>
+      <label class="sck">
+        <input type="checkbox" id="oGrouped" checked>
+        <div class="sck-wrap"><span>Group output by practice area</span></div>
+      </label>
+
+      <label class="sck">
+        <input type="checkbox" id="oNearMe">
+        <div class="sck-wrap">
+          <span>Include "near me" variants</span>
+          <span class="sck-note">From base roots only &#183; not for Lesiones Personales</span>
+        </div>
+      </label>
+    </div>
+    <div class="btn-gen-wrap">
+      <button class="btn-gen" id="genBtn">Generate Keywords &#8594;</button>
+    </div>
+  </div>
+</div>
+
+<!-- OUTPUT -->
+<div class="out-wrap" id="outWrap">
+  <div class="out-stats">
+    <div><span class="out-num" id="oNum">0</span><span class="out-lbl-sm"> keywords</span></div>
+    <span class="out-tag" id="oMode">&#8212;</span>
+    <span class="out-tag" id="oAreas">&#8212;</span>
+    <div class="out-acts">
+      <button class="btn btn-ghost" id="clearOutBtn" style="color:#fff;border-color:rgba(255,255,255,.3)">&#10005; Clear</button>
+      <button class="btn" id="dlBtn" style="background:rgba(255,255,255,.12);color:#fff;border:1px solid rgba(255,255,255,.3)">&#8595; .txt</button>
+      <button class="btn" id="copyAllBtn" style="background:#fff;color:var(--navy);font-weight:600">&#9014; Copy All</button>
+    </div>
+  </div>
+  <div class="out-body" id="outBody"></div>
+</div>
+
+</main>
+
+<script>
+/* =========================================================
+   CORPUS DATA
+   To update: replace the JSON object assigned to CORPUS_DATA.
+   Do not modify any JavaScript below this block.
+   ========================================================= */
+var CORPUS_DATA =
+{
+  "meta": {
+    "generated_by": "SEO Legal Keyword Corpus Builder",
+    "purpose": "Source of truth keyword corpus for standalone HTML keyword generator",
+    "total_money_term_rows_reviewed": 90,
+    "total_raw_term_lines": 2510,
+    "total_unique_terms_extracted": 2406,
+    "clients_skipped": [
+      "Catania and Catania (no longer client)",
+      "The Law Firm Of Aaron A. Herbert, P.C. (no longer client)",
+      "Arizona Law Group (no longer client)",
+      "Rubinowitz Law Firm P.C. (no longer client)",
+      "Steven D. Miller, P.A. (no longer client)",
+      "Dolan + Zimmerman LLP (no longer client)",
+      "Vikk AI (non-legal / AI product)",
+      "Genesis Legal AI (non-legal / AI product)",
+      "Elite Legal Marketing (non-legal / agency)",
+      "Austin Medicine (non-legal / medical clinic)",
+      "Vindicate Criminal Law Group (hosting-only / no terms)"
+    ],
+    "verticals_found": [
+      "Personal Injury",
+      "Lesiones Personales",
+      "Sexual Abuse",
+      "Family Law",
+      "Criminal Defense",
+      "Estate Planning / Probate",
+      "Business Law / Commercial Litigation",
+      "Employment Law",
+      "Immigration",
+      "Mass Tort / Class Action / Product Injury",
+      "Professional License Defense"
+    ],
+    "total_practice_areas": 131,
+    "notes": [
+      "Spanish-language terms preserved as a standalone 'Español / Spanish' vertical with practice area 'Lesiones Personales'.",
+      "Employment Law is a top-level vertical (alongside Personal Injury, Criminal Defense, etc.).",
+      "Energy Law is a standalone vertical for oil/gas royalties and transactional energy work — distinct from oilfield PI injury claims.",
+      "Elder financial exploitation merged into Nursing Home Abuse — arises alongside neglect claims.",
+      "Liquor liability (dram shop) is Personal Injury — plaintiff-side civil claim for DUI victims, not criminal defense.",
+      "Firefighter injury is Personal Injury — occupational injury claim involving equipment failure or cancer presumption laws.",
+      "Defense Base Act (DBA) overlaps Employment Law and Oilfield Injury — classified under Employment Law.",
+      "Domestic violence appears in Family Law (protective orders / civil) and Criminal Defense (defense of accused) — each has a disambiguation note.",
+      "AI Compliance and Amazon/Airbnb Platform Defense flagged for quarterly review as landscape evolves.",
+      "Old Keyword Generator [NEW].xlsx Criminal sheet was labeled 'NEED TO UPDATE' — Criminal corpus here is significantly expanded."
+    ]
+  },
+  "LEGAL_KEYWORD_CORPUS": [
+    {
+      "parent_vertical": "Personal Injury",
+      "practice_area_name": "Personal Injury",
+      "display_name": "Personal Injury",
+      "normalized_id": "personal_injury",
+      "synonyms": [
+        "injury lawyer",
+        "accident attorney",
+        "injury attorney"
+      ],
+      "base_keyword_roots": [
+        "personal injury lawyer",
+        "personal injury attorney",
+        "injury lawyer",
+        "injury attorney"
+      ],
+      "local_keyword_patterns": [
+        "personal injury lawyer {location}",
+        "{location} personal injury lawyer",
+        "personal injury attorney {location}",
+        "{location} personal injury attorney",
+        "injury lawyer {location}",
+        "{location} injury lawyer",
+        "injury attorney {location}",
+        "{location} injury attorney"
+      ],
+      "national_keyword_patterns": [
+        "personal injury lawyer",
+        "personal injury attorney",
+        "injury lawyer",
+        "injury attorney"
+      ],
+      "examples_found_in_money_terms": [
+        "albuquerque personal injury lawyer",
+        "personal injury lawyer santa fe nm",
+        "rio rancho personal injury lawyer",
+        "carlsbad personal injury lawyer",
+        "hobbs personal injury lawyer",
+        "personal injury lawyer roswell"
+      ],
+      "notes": "",
+      "needs_manual_review": false
+    },
+    {
+      "parent_vertical": "Personal Injury",
+      "practice_area_name": "Car Accidents",
+      "display_name": "Car Accidents",
+      "normalized_id": "car_accidents",
+      "synonyms": [
+        "auto accident lawyer",
+        "vehicle accident attorney",
+        "accident lawyer"
+      ],
+      "base_keyword_roots": [
+        "car accident lawyer",
+        "car accident attorney",
+        "auto accident lawyer",
+        "auto accident attorney",
+        "accident lawyer",
+        "accident attorney"
+      ],
+      "local_keyword_patterns": [
+        "car accident lawyer {location}",
+        "{location} car accident lawyer",
+        "car accident attorney {location}",
+        "{location} car accident attorney",
+        "auto accident lawyer {location}",
+        "{location} auto accident lawyer",
+        "accident lawyer {location}",
+        "{location} accident lawyer",
+        "accident attorney {location}",
+        "{location} accident attorney"
+      ],
+      "national_keyword_patterns": [
+        "car accident lawyer",
+        "car accident attorney",
+        "auto accident lawyer"
+      ],
+      "examples_found_in_money_terms": [
+        "albuquerque car accident lawyer",
+        "santa fe car accident lawyer",
+        "rio rancho car accident lawyer",
+        "carlsbad car accident lawyer",
+        "hobbs car accident lawyer",
+        "roswell car accident lawyer"
+      ],
+      "notes": "",
+      "needs_manual_review": false
+    },
+    {
+      "parent_vertical": "Personal Injury",
+      "practice_area_name": "Truck Accidents",
+      "display_name": "Truck Accidents",
+      "normalized_id": "truck_accidents",
+      "synonyms": [
+        "18-wheeler lawyer",
+        "semi-truck accident attorney",
+        "commercial vehicle lawyer"
+      ],
+      "base_keyword_roots": [
+        "truck accident lawyer",
+        "truck accident attorney",
+        "18-wheeler accident lawyer",
+        "commercial vehicle accident lawyer"
+      ],
+      "local_keyword_patterns": [
+        "truck accident lawyer {location}",
+        "{location} truck accident lawyer",
+        "truck accident attorney {location}",
+        "{location} truck accident attorney"
+      ],
+      "national_keyword_patterns": [
+        "truck accident lawyer",
+        "truck accident attorney"
+      ],
+      "examples_found_in_money_terms": [
+        "albuquerque truck accident lawyer",
+        "santa fe truck accident lawyer",
+        "rio rancho truck accident lawyer",
+        "carlsbad truck accident lawyer",
+        "hobbs truck accident lawyer",
+        "roswell truck accident lawyer"
+      ],
+      "notes": "",
+      "needs_manual_review": false
+    },
+    {
+      "parent_vertical": "Personal Injury",
+      "practice_area_name": "Motorcycle Accidents",
+      "display_name": "Motorcycle Accidents",
+      "normalized_id": "motorcycle_accidents",
+      "synonyms": [
+        "bike accident lawyer"
+      ],
+      "base_keyword_roots": [
+        "motorcycle accident lawyer",
+        "motorcycle accident attorney"
+      ],
+      "local_keyword_patterns": [
+        "motorcycle accident lawyer {location}",
+        "{location} motorcycle accident lawyer",
+        "motorcycle accident attorney {location}",
+        "{location} motorcycle accident attorney"
+      ],
+      "national_keyword_patterns": [
+        "motorcycle accident lawyer",
+        "motorcycle accident attorney"
+      ],
+      "examples_found_in_money_terms": [
+        "albuquerque motorcycle accident lawyer",
+        "santa fe motorcycle accident lawyer",
+        "rio rancho motorcycle accident lawyer",
+        "carlsbad motorcycle accident lawyer",
+        "hobbs motorcycle accident lawyer",
+        "roswell motorcycle accident lawyer"
+      ],
+      "notes": "",
+      "needs_manual_review": false
+    },
+    {
+      "parent_vertical": "Personal Injury",
+      "practice_area_name": "Wrongful Death",
+      "display_name": "Wrongful Death",
+      "normalized_id": "wrongful_death",
+      "synonyms": [],
+      "base_keyword_roots": [
+        "wrongful death lawyer",
+        "wrongful death attorney"
+      ],
+      "local_keyword_patterns": [
+        "wrongful death lawyer {location}",
+        "{location} wrongful death lawyer",
+        "wrongful death attorney {location}",
+        "{location} wrongful death attorney"
+      ],
+      "national_keyword_patterns": [
+        "wrongful death lawyer",
+        "wrongful death attorney"
+      ],
+      "examples_found_in_money_terms": [
+        "albuquerque wrongful death lawyer",
+        "santa fe wrongful death lawyer",
+        "roswell wrongful death lawyer",
+        "wrongful death lawyer st louis",
+        "cincinnati wrongful death lawyer",
+        "columbus wrongful death lawyer"
+      ],
+      "notes": "",
+      "needs_manual_review": false
+    },
+    {
+      "parent_vertical": "Personal Injury",
+      "practice_area_name": "Medical Malpractice",
+      "display_name": "Medical Malpractice",
+      "normalized_id": "medical_malpractice",
+      "synonyms": [
+        "medical negligence lawyer",
+        "misdiagnosis lawyer",
+        "surgical error attorney"
+      ],
+      "base_keyword_roots": [
+        "medical malpractice lawyer",
+        "medical malpractice attorney",
+        "misdiagnosis lawyer",
+        "surgical error lawyer",
+        "failure to diagnose lawyer",
+        "medication error lawyer"
+      ],
+      "local_keyword_patterns": [
+        "medical malpractice lawyer {location}",
+        "{location} medical malpractice lawyer",
+        "medical malpractice attorney {location}",
+        "{location} medical malpractice attorney"
+      ],
+      "national_keyword_patterns": [
+        "medical malpractice lawyer",
+        "medical malpractice attorney",
+        "misdiagnosis lawyer",
+        "surgical error lawyer",
+        "failure to diagnose lawyer"
+      ],
+      "examples_found_in_money_terms": [
+        "albuquerque medical malpractice lawyer",
+        "st louis medical malpractice lawyer",
+        "st. louis medication error lawyer",
+        "medical malpractice lawyer cincinnati",
+        "columbus medical malpractice lawyer",
+        "medical malpractice lawyer cleveland"
+      ],
+      "notes": "",
+      "needs_manual_review": false
+    },
+    {
+      "parent_vertical": "Personal Injury",
+      "practice_area_name": "Nursing Home Abuse",
+      "display_name": "Nursing Home Abuse",
+      "normalized_id": "nursing_home_abuse",
+      "synonyms": [
+        "elder abuse lawyer",
+        "nursing home neglect attorney",
+        "assisted living abuse lawyer",
+        "elder financial exploitation lawyer"
+      ],
+      "base_keyword_roots": [
+        "nursing home abuse lawyer",
+        "nursing home abuse attorney",
+        "nursing home neglect lawyer",
+        "elder abuse lawyer",
+        "bed sores lawyer",
+        "nursing home wrongful death lawyer",
+        "elder financial exploitation lawyer",
+        "elder financial abuse lawyer"
+      ],
+      "local_keyword_patterns": [
+        "nursing home abuse lawyer {location}",
+        "{location} nursing home abuse lawyer",
+        "nursing home abuse attorney {location}",
+        "{location} nursing home abuse attorney",
+        "elder abuse lawyer {location}",
+        "{location} elder abuse lawyer",
+        "financial exploitation attorney {location}"
+      ],
+      "national_keyword_patterns": [
+        "nursing home abuse lawyer",
+        "nursing home abuse attorney",
+        "elder abuse lawyer",
+        "bed sores lawyer",
+        "elder financial exploitation lawyer",
+        "elder financial abuse lawyer"
+      ],
+      "examples_found_in_money_terms": [
+        "albuquerque nursing home abuse lawyer",
+        "st louis nursing home abuse lawyer",
+        "cleveland nursing home abuse lawyer",
+        "seattle nursing home abuse lawyer",
+        "nursing home abuse lawyer everett",
+        "boca raton nursing home abuse lawyer"
+      ],
+      "notes": "Includes elder financial exploitation — often arises alongside neglect claims. Financial exploitation terms were found in Malman Law (Chicago) nursing home data.",
+      "needs_manual_review": false
+    },
+    {
+      "parent_vertical": "Personal Injury",
+      "practice_area_name": "Bicycle Accidents",
+      "display_name": "Bicycle Accidents",
+      "normalized_id": "bicycle_accidents",
+      "synonyms": [
+        "bike accident lawyer"
+      ],
+      "base_keyword_roots": [
+        "bicycle accident lawyer",
+        "bicycle accident attorney",
+        "bike accident lawyer"
+      ],
+      "local_keyword_patterns": [
+        "bicycle accident lawyer {location}",
+        "{location} bicycle accident lawyer",
+        "bicycle accident attorney {location}",
+        "{location} bicycle accident attorney"
+      ],
+      "national_keyword_patterns": [
+        "bicycle accident lawyer",
+        "bicycle accident attorney"
+      ],
+      "examples_found_in_money_terms": [
+        "bicycle accident lawyer santa fe",
+        "roswell bicycle accident lawyer",
+        "st louis bicycle accident lawyer",
+        "cincinnati bicycle accident lawyer",
+        "columbus bicycle accident lawyer",
+        "cleveland bicycle accident lawyer"
+      ],
+      "notes": "",
+      "needs_manual_review": false
+    },
+    {
+      "parent_vertical": "Personal Injury",
+      "practice_area_name": "Pedestrian Accidents",
+      "display_name": "Pedestrian Accidents",
+      "normalized_id": "pedestrian_accidents",
+      "synonyms": [],
+      "base_keyword_roots": [
+        "pedestrian accident lawyer",
+        "pedestrian accident attorney"
+      ],
+      "local_keyword_patterns": [
+        "pedestrian accident lawyer {location}",
+        "{location} pedestrian accident lawyer",
+        "pedestrian accident attorney {location}",
+        "{location} pedestrian accident attorney"
+      ],
+      "national_keyword_patterns": [
+        "pedestrian accident lawyer",
+        "pedestrian accident attorney"
+      ],
+      "examples_found_in_money_terms": [
+        "pedestrian accident lawyer santa fe",
+        "roswell pedestrian accident lawyer",
+        "cincinnati pedestrian accident lawyer",
+        "columbus pedestrian accident lawyer",
+        "cleveland pedestrian accident lawyer",
+        "seattle pedestrian accident lawyer"
+      ],
+      "notes": "",
+      "needs_manual_review": false
+    },
+    {
+      "parent_vertical": "Personal Injury",
+      "practice_area_name": "Slip and Fall",
+      "display_name": "Slip and Fall",
+      "normalized_id": "slip_and_fall",
+      "synonyms": [
+        "trip and fall lawyer",
+        "premises fall attorney"
+      ],
+      "base_keyword_roots": [
+        "slip and fall lawyer",
+        "slip and fall attorney"
+      ],
+      "local_keyword_patterns": [
+        "slip and fall lawyer {location}",
+        "{location} slip and fall lawyer",
+        "slip and fall attorney {location}",
+        "{location} slip and fall attorney"
+      ],
+      "national_keyword_patterns": [
+        "slip and fall lawyer",
+        "slip and fall attorney"
+      ],
+      "examples_found_in_money_terms": [
+        "slip and fall attorney albuquerque",
+        "slip and fall lawyer santa fe",
+        "slip and fall lawyer st louis",
+        "boca raton slip and fall lawyer",
+        "arkadelphia slip and fall lawyer",
+        "fort smith slip and fall lawyer"
+      ],
+      "notes": "",
+      "needs_manual_review": false
+    },
+    {
+      "parent_vertical": "Personal Injury",
+      "practice_area_name": "Brain Injuries",
+      "display_name": "Brain Injuries",
+      "normalized_id": "brain_injuries",
+      "synonyms": [
+        "TBI lawyer",
+        "traumatic brain injury attorney",
+        "cerebral palsy lawyer"
+      ],
+      "base_keyword_roots": [
+        "brain injury lawyer",
+        "brain injury attorney",
+        "traumatic brain injury lawyer",
+        "traumatic brain injury attorney",
+        "cerebral palsy lawyer"
+      ],
+      "local_keyword_patterns": [
+        "brain injury lawyer {location}",
+        "{location} brain injury lawyer",
+        "brain injury attorney {location}",
+        "{location} brain injury attorney",
+        "traumatic brain injury lawyer {location}",
+        "{location} traumatic brain injury lawyer"
+      ],
+      "national_keyword_patterns": [
+        "brain injury lawyer",
+        "brain injury attorney",
+        "traumatic brain injury lawyer",
+        "cerebral palsy lawyer"
+      ],
+      "examples_found_in_money_terms": [
+        "brain injury lawyer st louis",
+        "st. louis cerebral palsy lawyer",
+        "cincinnati brain injury lawyer",
+        "traumatic brain injury lawyer columbus",
+        "cleveland brain injury lawyer",
+        "seattle brain injury lawyer"
+      ],
+      "notes": "",
+      "needs_manual_review": false
+    },
+    {
+      "parent_vertical": "Personal Injury",
+      "practice_area_name": "Spinal Cord Injuries",
+      "display_name": "Spinal Cord Injuries",
+      "normalized_id": "spinal_cord_injuries",
+      "synonyms": [
+        "paralysis lawyer",
+        "paraplegia attorney"
+      ],
+      "base_keyword_roots": [
+        "spinal cord injury lawyer",
+        "spinal cord injury attorney",
+        "paraplegia lawyer"
+      ],
+      "local_keyword_patterns": [
+        "spinal cord injury lawyer {location}",
+        "{location} spinal cord injury lawyer",
+        "spinal cord injury attorney {location}",
+        "{location} spinal cord injury attorney"
+      ],
+      "national_keyword_patterns": [
+        "spinal cord injury lawyer",
+        "spinal cord injury attorney"
+      ],
+      "examples_found_in_money_terms": [
+        "st louis spinal cord injury lawyer",
+        "cincinnati spinal cord injury lawyer",
+        "columbus spinal cord injury lawyer",
+        "cleveland spinal cord injury lawyer",
+        "seattle spinal cord injury lawyer",
+        "fort smith spinal cord injury lawyer"
+      ],
+      "notes": "",
+      "needs_manual_review": false
+    },
+    {
+      "parent_vertical": "Personal Injury",
+      "practice_area_name": "Bus Accidents",
+      "display_name": "Bus Accidents",
+      "normalized_id": "bus_accidents",
+      "synonyms": [
+        "mass transit accident lawyer",
+        "public transportation injury attorney"
+      ],
+      "base_keyword_roots": [
+        "bus accident lawyer",
+        "bus accident attorney",
+        "mass transit accident lawyer"
+      ],
+      "local_keyword_patterns": [
+        "bus accident lawyer {location}",
+        "{location} bus accident lawyer",
+        "bus accident attorney {location}",
+        "{location} bus accident attorney"
+      ],
+      "national_keyword_patterns": [
+        "bus accident lawyer",
+        "bus accident attorney"
+      ],
+      "examples_found_in_money_terms": [
+        "st louis bus accident lawyer",
+        "seattle bus accident lawyer",
+        "everett bus accident lawyer",
+        "boca raton bus accident lawyer",
+        "bus accident lawyer little rock",
+        "nashville bus accident lawyer"
+      ],
+      "notes": "",
+      "needs_manual_review": false
+    },
+    {
+      "parent_vertical": "Personal Injury",
+      "practice_area_name": "Premises Liability",
+      "display_name": "Premises Liability",
+      "normalized_id": "premises_liability",
+      "synonyms": [
+        "negligent security lawyer",
+        "property injury attorney"
+      ],
+      "base_keyword_roots": [
+        "premises liability lawyer",
+        "premises liability attorney",
+        "negligent security lawyer"
+      ],
+      "local_keyword_patterns": [
+        "premises liability lawyer {location}",
+        "{location} premises liability lawyer",
+        "premises liability attorney {location}",
+        "{location} premises liability attorney",
+        "negligent security lawyer {location}",
+        "{location} negligent security lawyer"
+      ],
+      "national_keyword_patterns": [
+        "premises liability lawyer",
+        "premises liability attorney",
+        "negligent security lawyer"
+      ],
+      "examples_found_in_money_terms": [
+        "st. louis negligent security lawyer",
+        "cincinnati premises liability lawyer",
+        "columbus premises liability lawyer",
+        "cleveland premises liability lawyer",
+        "seattle premises liability lawyer",
+        "boca raton premises liability lawyer"
+      ],
+      "notes": "",
+      "needs_manual_review": false
+    },
+    {
+      "parent_vertical": "Personal Injury",
+      "practice_area_name": "Dog Bites",
+      "display_name": "Dog Bites",
+      "normalized_id": "dog_bites",
+      "synonyms": [
+        "animal attack lawyer",
+        "dog attack attorney"
+      ],
+      "base_keyword_roots": [
+        "dog bite lawyer",
+        "dog bite attorney",
+        "animal attack lawyer"
+      ],
+      "local_keyword_patterns": [
+        "dog bite lawyer {location}",
+        "{location} dog bite lawyer",
+        "dog bite attorney {location}",
+        "{location} dog bite attorney",
+        "animal attack lawyer {location}",
+        "{location} animal attack lawyer"
+      ],
+      "national_keyword_patterns": [
+        "dog bite lawyer",
+        "dog bite attorney"
+      ],
+      "examples_found_in_money_terms": [
+        "albuquerque dog bite lawyer",
+        "roswell dog bite lawyer",
+        "st louis dog bite lawyer",
+        "cincinnati dog bite lawyer",
+        "columbus dog bite lawyer",
+        "cleveland dog bite lawyer"
+      ],
+      "notes": "",
+      "needs_manual_review": false
+    },
+    {
+      "parent_vertical": "Personal Injury",
+      "practice_area_name": "Burn Injuries",
+      "display_name": "Burn Injuries",
+      "normalized_id": "burn_injuries",
+      "synonyms": [
+        "fire injury lawyer"
+      ],
+      "base_keyword_roots": [
+        "burn injury lawyer",
+        "burn injury attorney"
+      ],
+      "local_keyword_patterns": [
+        "burn injury lawyer {location}",
+        "{location} burn injury lawyer",
+        "burn injury attorney {location}",
+        "{location} burn injury attorney"
+      ],
+      "national_keyword_patterns": [
+        "burn injury lawyer",
+        "burn injury attorney"
+      ],
+      "examples_found_in_money_terms": [
+        "albuquerque burn injury lawyer",
+        "seattle burn injury lawyer",
+        "everett burn injury lawyer",
+        "denver burn injury lawyer",
+        "burn injuries lawyer boca raton",
+        "fort smith burn injury lawyer"
+      ],
+      "notes": "",
+      "needs_manual_review": false
+    },
+    {
+      "parent_vertical": "Personal Injury",
+      "practice_area_name": "Workers' Compensation",
+      "display_name": "Workers' Compensation",
+      "normalized_id": "workers_compensation",
+      "synonyms": [
+        "work injury lawyer",
+        "work accident attorney",
+        "on-the-job injury lawyer"
+      ],
+      "base_keyword_roots": [
+        "workers compensation lawyer",
+        "workers compensation attorney",
+        "workers comp lawyer",
+        "work injury lawyer",
+        "workplace injury lawyer"
+      ],
+      "local_keyword_patterns": [
+        "workers compensation lawyer {location}",
+        "{location} workers compensation lawyer",
+        "workers compensation attorney {location}",
+        "{location} workers compensation attorney",
+        "workers comp lawyer {location}",
+        "{location} workers comp lawyer",
+        "work injury lawyer {location}",
+        "{location} work injury lawyer"
+      ],
+      "national_keyword_patterns": [
+        "workers compensation lawyer",
+        "workers compensation attorney",
+        "workers comp lawyer",
+        "work injury lawyer"
+      ],
+      "examples_found_in_money_terms": [
+        "st louis workers compensation lawyer",
+        "cincinnati workers compensation lawyer",
+        "columbus workers compensation lawyer",
+        "cleveland workers compensation lawyer",
+        "seattle workers compensation lawyer",
+        "work injury lawyer seattle"
+      ],
+      "notes": "",
+      "needs_manual_review": false
+    },
+    {
+      "parent_vertical": "Personal Injury",
+      "practice_area_name": "Product Liability",
+      "display_name": "Product Liability",
+      "normalized_id": "product_liability",
+      "synonyms": [
+        "defective product lawyer",
+        "dangerous product attorney"
+      ],
+      "base_keyword_roots": [
+        "product liability lawyer",
+        "product liability attorney",
+        "defective product lawyer",
+        "dangerous product lawyer"
+      ],
+      "local_keyword_patterns": [
+        "product liability lawyer {location}",
+        "{location} product liability lawyer",
+        "product liability attorney {location}",
+        "{location} product liability attorney"
+      ],
+      "national_keyword_patterns": [
+        "product liability lawyer",
+        "product liability attorney",
+        "defective product lawyer"
+      ],
+      "examples_found_in_money_terms": [
+        "st louis product liability lawyer",
+        "cincinnati product liability lawyer",
+        "columbus product liability lawyer",
+        "cleveland product liability lawyer",
+        "seattle product liability lawyer",
+        "product liability attorney boca raton"
+      ],
+      "notes": "",
+      "needs_manual_review": false
+    },
+    {
+      "parent_vertical": "Personal Injury",
+      "practice_area_name": "Birth Injury",
+      "display_name": "Birth Injury",
+      "normalized_id": "birth_injury",
+      "synonyms": [
+        "birth trauma lawyer",
+        "neonatal injury attorney"
+      ],
+      "base_keyword_roots": [
+        "birth injury lawyer",
+        "birth injury attorney"
+      ],
+      "local_keyword_patterns": [
+        "birth injury lawyer {location}",
+        "{location} birth injury lawyer",
+        "birth injury attorney {location}",
+        "{location} birth injury attorney"
+      ],
+      "national_keyword_patterns": [
+        "birth injury lawyer",
+        "birth injury attorney"
+      ],
+      "examples_found_in_money_terms": [
+        "albuquerque birth injury lawyer",
+        "st louis birth injury lawyer",
+        "cincinnati birth injury lawyer",
+        "columbus birth injury lawyer",
+        "cleveland birth injury lawyer",
+        "seattle birth injury lawyer"
+      ],
+      "notes": "",
+      "needs_manual_review": false
+    },
+    {
+      "parent_vertical": "Personal Injury",
+      "practice_area_name": "Construction Accidents",
+      "display_name": "Construction Accidents",
+      "normalized_id": "construction_accidents",
+      "synonyms": [
+        "construction site injury lawyer",
+        "scaffolding accident attorney"
+      ],
+      "base_keyword_roots": [
+        "construction accident lawyer",
+        "construction accident attorney",
+        "construction injury lawyer",
+        "scaffolding accident lawyer",
+        "electrocution accident lawyer",
+        "electrical injury lawyer"
+      ],
+      "local_keyword_patterns": [
+        "construction accident lawyer {location}",
+        "{location} construction accident lawyer",
+        "construction accident attorney {location}",
+        "{location} construction accident attorney"
+      ],
+      "national_keyword_patterns": [
+        "construction accident lawyer",
+        "construction accident attorney",
+        "construction injury lawyer"
+      ],
+      "examples_found_in_money_terms": [
+        "construction accident lawyer st louis",
+        "electrocution injury lawyer st louis",
+        "cincinnati construction accident lawyer",
+        "columbus construction accident lawyer",
+        "cleveland construction accident lawyer",
+        "seattle construction accident attorney"
+      ],
+      "notes": "",
+      "needs_manual_review": false
+    },
+    {
+      "parent_vertical": "Personal Injury",
+      "practice_area_name": "Rideshare Accidents",
+      "display_name": "Rideshare Accidents",
+      "normalized_id": "rideshare_accidents",
+      "synonyms": [
+        "Uber accident lawyer",
+        "Lyft accident attorney"
+      ],
+      "base_keyword_roots": [
+        "rideshare accident lawyer",
+        "rideshare accident attorney",
+        "uber accident lawyer",
+        "lyft accident lawyer",
+        "uber accident attorney",
+        "lyft accident attorney"
+      ],
+      "local_keyword_patterns": [
+        "rideshare accident lawyer {location}",
+        "{location} rideshare accident lawyer",
+        "uber accident lawyer {location}",
+        "{location} uber accident lawyer",
+        "lyft accident lawyer {location}",
+        "{location} lyft accident lawyer"
+      ],
+      "national_keyword_patterns": [
+        "rideshare accident lawyer",
+        "uber accident lawyer",
+        "lyft accident lawyer"
+      ],
+      "examples_found_in_money_terms": [
+        "st. louis uber accident lawyer",
+        "st louis lyft accident lawyer",
+        "st. louis rideshare sexual assault lawyer",
+        "cincinnati uber accident lawyer",
+        "cincinnati lyft accident lawyer",
+        "cincinnati rideshare accident lawyer"
+      ],
+      "notes": "",
+      "needs_manual_review": false
+    },
+    {
+      "parent_vertical": "Personal Injury",
+      "practice_area_name": "Catastrophic Injury",
+      "display_name": "Catastrophic Injury",
+      "normalized_id": "catastrophic_injury",
+      "synonyms": [
+        "severe injury lawyer",
+        "life-altering injury attorney"
+      ],
+      "base_keyword_roots": [
+        "catastrophic injury lawyer",
+        "catastrophic injury attorney"
+      ],
+      "local_keyword_patterns": [
+        "catastrophic injury lawyer {location}",
+        "{location} catastrophic injury lawyer",
+        "catastrophic injury attorney {location}",
+        "{location} catastrophic injury attorney"
+      ],
+      "national_keyword_patterns": [
+        "catastrophic injury lawyer",
+        "catastrophic injury attorney"
+      ],
+      "examples_found_in_money_terms": [
+        "everett catastrophic injury lawyer",
+        "catastrophic injury lawyer little rock",
+        "riverside catastrophic injury lawyer",
+        "catastrophic injury lawyer houston",
+        "dallas catastrophic injury lawyer",
+        "buffalo catastrophic injury lawyer"
+      ],
+      "notes": "",
+      "needs_manual_review": false
+    },
+    {
+      "parent_vertical": "Personal Injury",
+      "practice_area_name": "Child Injury",
+      "display_name": "Child Injury",
+      "normalized_id": "child_injury",
+      "synonyms": [
+        "injured child attorney",
+        "minor injury lawyer"
+      ],
+      "base_keyword_roots": [
+        "child injury lawyer",
+        "child injury attorney",
+        "daycare injury lawyer"
+      ],
+      "local_keyword_patterns": [
+        "child injury lawyer {location}",
+        "{location} child injury lawyer",
+        "child injury attorney {location}",
+        "{location} child injury attorney"
+      ],
+      "national_keyword_patterns": [
+        "child injury lawyer",
+        "child injury attorney"
+      ],
+      "examples_found_in_money_terms": [
+        "seattle child injury lawyer",
+        "redmond child injury lawyer",
+        "nashville injury to children lawyer",
+        "fort worth child injury lawyer",
+        "arlington child injury lawyer",
+        "boston campus injury lawyer"
+      ],
+      "notes": "",
+      "needs_manual_review": false
+    },
+    {
+      "parent_vertical": "Personal Injury",
+      "practice_area_name": "Negligent Security",
+      "display_name": "Negligent Security",
+      "normalized_id": "negligent_security",
+      "synonyms": [
+        "inadequate security lawyer"
+      ],
+      "base_keyword_roots": [
+        "negligent security lawyer",
+        "negligent security attorney"
+      ],
+      "local_keyword_patterns": [
+        "negligent security lawyer {location}",
+        "{location} negligent security lawyer"
+      ],
+      "national_keyword_patterns": [
+        "negligent security lawyer",
+        "negligent security attorney"
+      ],
+      "examples_found_in_money_terms": [
+        "st. louis negligent security lawyer",
+        "las vegas negligent security lawyer",
+        "negligent security lawyer sugar land",
+        "victoria negligent security lawyer",
+        "negligent security lawyer richmond",
+        "katy negligent security lawyer"
+      ],
+      "notes": "",
+      "needs_manual_review": false
+    },
+    {
+      "parent_vertical": "Personal Injury",
+      "practice_area_name": "Boat Accidents",
+      "display_name": "Boat Accidents",
+      "normalized_id": "boat_accidents",
+      "synonyms": [
+        "maritime injury lawyer",
+        "boating accident attorney"
+      ],
+      "base_keyword_roots": [
+        "boat accident lawyer",
+        "boat accident attorney",
+        "boating accident lawyer",
+        "maritime accident lawyer",
+        "jones act lawyer",
+        "cruise ship injury lawyer"
+      ],
+      "local_keyword_patterns": [
+        "boat accident lawyer {location}",
+        "{location} boat accident lawyer",
+        "boat accident attorney {location}",
+        "{location} boat accident attorney"
+      ],
+      "national_keyword_patterns": [
+        "boat accident lawyer",
+        "boating accident lawyer",
+        "maritime accident lawyer",
+        "jones act lawyer",
+        "cruise ship injury lawyer"
+      ],
+      "examples_found_in_money_terms": [
+        "st. louis boat accident lawyer",
+        "denver boat accident lawyer",
+        "boca raton boat accident lawyer",
+        "boca raton boat accident attorney",
+        "fort smith boat accident lawyer",
+        "galveston jones act injury lawyer"
+      ],
+      "notes": "",
+      "needs_manual_review": false
+    },
+    {
+      "parent_vertical": "Personal Injury",
+      "practice_area_name": "Train Accidents",
+      "display_name": "Train Accidents",
+      "normalized_id": "train_accidents",
+      "synonyms": [
+        "railroad accident lawyer"
+      ],
+      "base_keyword_roots": [
+        "train accident lawyer",
+        "train accident attorney",
+        "railroad accident lawyer"
+      ],
+      "local_keyword_patterns": [
+        "train accident lawyer {location}",
+        "{location} train accident lawyer"
+      ],
+      "national_keyword_patterns": [
+        "train accident lawyer",
+        "railroad accident lawyer"
+      ],
+      "examples_found_in_money_terms": [
+        "chicago train accident lawyer",
+        "tampa train accident lawyer",
+        "clearwater train accident lawyer",
+        "orlando train accident lawyer"
+      ],
+      "notes": "",
+      "needs_manual_review": false
+    },
+    {
+      "parent_vertical": "Personal Injury",
+      "practice_area_name": "Workplace Injury",
+      "display_name": "Workplace Injury",
+      "normalized_id": "workplace_injury",
+      "synonyms": [
+        "on-the-job injury lawyer",
+        "job accident attorney"
+      ],
+      "base_keyword_roots": [
+        "workplace injury lawyer",
+        "workplace accident lawyer"
+      ],
+      "local_keyword_patterns": [
+        "workplace injury lawyer {location}",
+        "{location} workplace injury lawyer"
+      ],
+      "national_keyword_patterns": [
+        "workplace injury lawyer",
+        "workplace accident lawyer"
+      ],
+      "examples_found_in_money_terms": [
+        "dallas workplace injury lawyer",
+        "fort worth workplace injury lawyer",
+        "arlington workplace injury lawyer",
+        "sugar land workplace injury lawyer",
+        "victoria workplace injury lawyer",
+        "richmond workplace injury lawyer"
+      ],
+      "notes": "",
+      "needs_manual_review": false
+    },
+    {
+      "parent_vertical": "Personal Injury",
+      "practice_area_name": "Oilfield & Offshore Injury",
+      "display_name": "Oilfield & Offshore Injury",
+      "normalized_id": "oilfield_offshore_injury",
+      "synonyms": [
+        "oil rig injury lawyer",
+        "offshore accident attorney",
+        "jones act lawyer"
+      ],
+      "base_keyword_roots": [
+        "oilfield injury lawyer",
+        "oil field injury lawyer",
+        "oil rig injury lawyer",
+        "offshore injury lawyer",
+        "oil and gas field injury lawyer",
+        "defense base act lawyer"
+      ],
+      "local_keyword_patterns": [
+        "oilfield injury lawyer {location}",
+        "{location} oilfield injury lawyer",
+        "oil rig injury lawyer {location}",
+        "{location} oil rig injury lawyer"
+      ],
+      "national_keyword_patterns": [
+        "oilfield injury lawyer",
+        "offshore injury lawyer",
+        "oil and gas field injury lawyer",
+        "defense base act lawyer"
+      ],
+      "examples_found_in_money_terms": [
+        "albuquerque oilfield injury lawyer",
+        "carlsbad oil rig injury attorney",
+        "oil field injury hobbs lawyer",
+        "denver excavation accident lawyer",
+        "houston offshore injury lawyer",
+        "oil and gas field injury lawyer houston"
+      ],
+      "notes": "",
+      "needs_manual_review": false
+    },
+    {
+      "parent_vertical": "Personal Injury",
+      "practice_area_name": "Aviation Accidents",
+      "display_name": "Aviation Accidents",
+      "normalized_id": "aviation_accidents",
+      "synonyms": [
+        "airplane crash lawyer",
+        "airline accident attorney"
+      ],
+      "base_keyword_roots": [
+        "aviation accident lawyer",
+        "airplane accident lawyer"
+      ],
+      "local_keyword_patterns": [
+        "aviation accident lawyer {location}",
+        "{location} aviation accident lawyer"
+      ],
+      "national_keyword_patterns": [
+        "aviation accident lawyer",
+        "airplane accident lawyer"
+      ],
+      "examples_found_in_money_terms": [
+        "st. louis airplane accident lawyer",
+        "fort smith aviation accident lawyer",
+        "san francisco aviation accident lawyer"
+      ],
+      "notes": "",
+      "needs_manual_review": false
+    },
+    {
+      "parent_vertical": "Personal Injury",
+      "practice_area_name": "Toxic Exposure / Mesothelioma",
+      "display_name": "Toxic Exposure & Mesothelioma",
+      "normalized_id": "toxic_exposure",
+      "synonyms": [
+        "asbestos lawyer",
+        "mesothelioma attorney",
+        "cancer-causing product lawyer"
+      ],
+      "base_keyword_roots": [
+        "mesothelioma lawyer",
+        "asbestos lawyer",
+        "toxic exposure lawyer",
+        "carbon monoxide poisoning lawyer",
+        "food poisoning lawyer",
+        "cancer-causing products lawyer"
+      ],
+      "local_keyword_patterns": [
+        "mesothelioma lawyer {location}",
+        "{location} mesothelioma lawyer",
+        "asbestos lawyer {location}",
+        "{location} asbestos lawyer"
+      ],
+      "national_keyword_patterns": [
+        "mesothelioma lawyer",
+        "asbestos lawyer",
+        "toxic exposure lawyer",
+        "cancer-causing products lawyer"
+      ],
+      "examples_found_in_money_terms": [
+        "mesothelioma lawyer in st louis",
+        "dallas mesothelioma lawyer",
+        "fort worth mesothelioma lawyer",
+        "fort worth toxic chemicals accident lawyer",
+        "springfield ma asbestos lawyer",
+        "asbestos lawyer boston"
+      ],
+      "notes": "",
+      "needs_manual_review": false
+    },
+    {
+      "parent_vertical": "Personal Injury",
+      "practice_area_name": "Explosion Accidents",
+      "display_name": "Explosion Accidents",
+      "normalized_id": "explosion_accidents",
+      "synonyms": [
+        "blast injury lawyer",
+        "industrial explosion attorney"
+      ],
+      "base_keyword_roots": [
+        "explosion accident lawyer",
+        "explosion injury lawyer"
+      ],
+      "local_keyword_patterns": [
+        "explosion accident lawyer {location}",
+        "{location} explosion accident lawyer"
+      ],
+      "national_keyword_patterns": [
+        "explosion accident lawyer",
+        "explosion injury lawyer"
+      ],
+      "examples_found_in_money_terms": [
+        "atlanta factory accident lawyer",
+        "atlanta explosion accident lawyer",
+        "dallas explosion accident lawyer",
+        "fort worth explosion accident lawyer",
+        "niagara falls explosion accident lawyer",
+        "tonawanda explosion accident lawyer"
+      ],
+      "notes": "",
+      "needs_manual_review": false
+    },
+    {
+      "parent_vertical": "Personal Injury",
+      "practice_area_name": "Amputation Injuries",
+      "display_name": "Amputation Injuries",
+      "normalized_id": "amputation",
+      "synonyms": [
+        "limb loss lawyer"
+      ],
+      "base_keyword_roots": [
+        "amputation lawyer",
+        "amputation attorney"
+      ],
+      "local_keyword_patterns": [
+        "amputation lawyer {location}",
+        "{location} amputation lawyer"
+      ],
+      "national_keyword_patterns": [
+        "amputation lawyer",
+        "amputation attorney"
+      ],
+      "examples_found_in_money_terms": [
+        "st. louis amputation lawyer",
+        "houston amputation lawyer",
+        "portland amputation due to sepsis lawyer",
+        "amputation lawyer buffalo",
+        "niagara falls amputation injury lawyer",
+        "tonawanda amputation injury lawyer"
+      ],
+      "notes": "",
+      "needs_manual_review": false
+    },
+    {
+      "parent_vertical": "Personal Injury",
+      "practice_area_name": "Drunk Driving Accident (Victim)",
+      "display_name": "Drunk Driving Accident Victim",
+      "normalized_id": "drunk_driving_accident_victim",
+      "synonyms": [
+        "DUI accident victim lawyer",
+        "DWI accident victim attorney"
+      ],
+      "base_keyword_roots": [
+        "drunk driving accident lawyer",
+        "dui accident victim lawyer",
+        "dwi accident victim lawyer"
+      ],
+      "local_keyword_patterns": [
+        "drunk driving accident lawyer {location}",
+        "{location} drunk driving accident lawyer",
+        "dui accident victim lawyer {location}",
+        "{location} dui accident victim lawyer"
+      ],
+      "national_keyword_patterns": [
+        "drunk driving accident lawyer",
+        "dui accident victim lawyer"
+      ],
+      "examples_found_in_money_terms": [
+        "arkadelphia dui victim lawyer",
+        "little rock dwi accident victim lawyer",
+        "seattle drunk driving accident lawyer",
+        "denver drunk driving accident lawyer",
+        "springfield drunk driving accident lawyer",
+        "boston drunk driving accident lawyer"
+      ],
+      "notes": "",
+      "needs_manual_review": false
+    },
+    {
+      "parent_vertical": "Personal Injury",
+      "practice_area_name": "Social Security Disability",
+      "display_name": "Social Security Disability",
+      "normalized_id": "social_security_disability",
+      "synonyms": [
+        "SSD lawyer",
+        "SSDI attorney",
+        "disability benefits lawyer"
+      ],
+      "base_keyword_roots": [
+        "social security disability lawyer",
+        "social security disability attorney"
+      ],
+      "local_keyword_patterns": [
+        "social security disability lawyer {location}",
+        "{location} social security disability lawyer",
+        "social security lawyer {location}",
+        "{location} social security lawyer"
+      ],
+      "national_keyword_patterns": [
+        "social security disability lawyer",
+        "social security disability attorney"
+      ],
+      "examples_found_in_money_terms": [
+        "social security disability lawyer columbus",
+        "social security disability lawyer nashville",
+        "social security lawyer tampa",
+        "lakeland social security lawyer",
+        "social security disability lawyer st petersburg",
+        "social security disability lawyer clearwater"
+      ],
+      "notes": "",
+      "needs_manual_review": false
+    },
+    {
+      "parent_vertical": "Personal Injury",
+      "practice_area_name": "Golf Cart Accidents",
+      "display_name": "Golf Cart Accidents",
+      "normalized_id": "golf_cart_accidents",
+      "synonyms": [],
+      "base_keyword_roots": [
+        "golf cart accident lawyer",
+        "golf cart accident attorney"
+      ],
+      "local_keyword_patterns": [
+        "golf cart accident lawyer {location}",
+        "{location} golf cart accident lawyer"
+      ],
+      "national_keyword_patterns": [
+        "golf cart accident lawyer"
+      ],
+      "examples_found_in_money_terms": [
+        "golf cart accident lawyer lakeland",
+        "golf cart accident lawyer sarasota",
+        "golf cart accident lawyer st petersburg",
+        "clearwater golf cart accident attorney",
+        "golf cart accident lawyer bradenton",
+        "orlando golf cart accident lawyer"
+      ],
+      "notes": "",
+      "needs_manual_review": false
+    },
+    {
+      "parent_vertical": "Personal Injury",
+      "practice_area_name": "Hotel & Hospitality Injury",
+      "display_name": "Hotel & Hospitality Injury",
+      "normalized_id": "hotel_hospitality_injury",
+      "synonyms": [
+        "hotel accident lawyer",
+        "resort injury attorney"
+      ],
+      "base_keyword_roots": [
+        "hotel injury lawyer",
+        "las vegas hotel injury lawyer",
+        "greyhound bus accident lawyer"
+      ],
+      "local_keyword_patterns": [
+        "hotel injury lawyer {location}",
+        "{location} hotel injury lawyer"
+      ],
+      "national_keyword_patterns": [
+        "hotel injury lawyer",
+        "greyhound bus accident lawyer"
+      ],
+      "examples_found_in_money_terms": [
+        "greyhound bus accident lawyer",
+        "jacuzzi bathtub lawyer",
+        "las vegas hotel injury lawyer"
+      ],
+      "notes": "Niche — found in Cloward Trial Lawyers data (Las Vegas national claims)",
+      "needs_manual_review": false
+    },
+    {
+      "parent_vertical": "Personal Injury",
+      "practice_area_name": "Scooter Accidents",
+      "display_name": "Scooter Accidents",
+      "normalized_id": "scooter_accidents",
+      "synonyms": [
+        "electric scooter injury lawyer"
+      ],
+      "base_keyword_roots": [
+        "scooter accident lawyer",
+        "electric scooter accident lawyer"
+      ],
+      "local_keyword_patterns": [
+        "scooter accident lawyer {location}",
+        "{location} scooter accident lawyer"
+      ],
+      "national_keyword_patterns": [
+        "scooter accident lawyer"
+      ],
+      "examples_found_in_money_terms": [
+        "denver scooter accident lawyer",
+        "boston electric scooter accident lawyer"
+      ],
+      "notes": "",
+      "needs_manual_review": false
+    },
+    {
+      "parent_vertical": "Personal Injury",
+      "practice_area_name": "Swimming Pool Accidents",
+      "display_name": "Swimming Pool Accidents",
+      "normalized_id": "swimming_pool_accidents",
+      "synonyms": [
+        "pool drowning lawyer",
+        "pool injury attorney"
+      ],
+      "base_keyword_roots": [
+        "swimming pool accident lawyer",
+        "pool injury lawyer",
+        "drowning attorney"
+      ],
+      "local_keyword_patterns": [
+        "swimming pool accident lawyer {location}",
+        "{location} pool accident lawyer"
+      ],
+      "national_keyword_patterns": [
+        "swimming pool accident lawyer",
+        "pool injury lawyer"
+      ],
+      "examples_found_in_money_terms": [
+        "swimming pool accident lawyer everett",
+        "maryland pool injury + drowning attorney",
+        "san francisco swimming pool accident lawyer"
+      ],
+      "notes": "",
+      "needs_manual_review": false
+    },
+    {
+      "parent_vertical": "Family Law",
+      "practice_area_name": "Family Law (General)",
+      "display_name": "Family Law",
+      "normalized_id": "family_law",
+      "synonyms": [
+        "family lawyer",
+        "domestic relations attorney"
+      ],
+      "base_keyword_roots": [
+        "family law attorney",
+        "family lawyer",
+        "family attorney"
+      ],
+      "local_keyword_patterns": [
+        "family law attorney {location}",
+        "{location} family law attorney",
+        "family lawyer {location}",
+        "{location} family lawyer",
+        "family attorney {location}",
+        "{location} family attorney"
+      ],
+      "national_keyword_patterns": [
+        "family law attorney",
+        "family lawyer",
+        "family attorney"
+      ],
+      "examples_found_in_money_terms": [
+        "austin family attorney",
+        "austin family lawyer",
+        "austin family law attorney",
+        "seattle family lawyer",
+        "seattle lgbt family lawyer",
+        "riverside family lawyer"
+      ],
+      "notes": "",
+      "needs_manual_review": false
+    },
+    {
+      "parent_vertical": "Family Law",
+      "practice_area_name": "Divorce",
+      "display_name": "Divorce",
+      "normalized_id": "divorce",
+      "synonyms": [
+        "dissolution of marriage lawyer",
+        "marital separation attorney"
+      ],
+      "base_keyword_roots": [
+        "divorce lawyer",
+        "divorce attorney"
+      ],
+      "local_keyword_patterns": [
+        "divorce lawyer {location}",
+        "{location} divorce lawyer",
+        "divorce attorney {location}",
+        "{location} divorce attorney"
+      ],
+      "national_keyword_patterns": [
+        "divorce lawyer",
+        "divorce attorney"
+      ],
+      "examples_found_in_money_terms": [
+        "austin high asset divorce lawyer",
+        "austin high asset divorce attorney",
+        "austin divorce attorney",
+        "austin divorce lawyer",
+        "divorce lawyer seattle",
+        "seattle military divorce lawyer"
+      ],
+      "notes": "",
+      "needs_manual_review": false
+    },
+    {
+      "parent_vertical": "Family Law",
+      "practice_area_name": "Child Custody",
+      "display_name": "Child Custody",
+      "normalized_id": "child_custody",
+      "synonyms": [
+        "custody lawyer",
+        "parental rights attorney",
+        "conservatorship lawyer"
+      ],
+      "base_keyword_roots": [
+        "child custody lawyer",
+        "child custody attorney",
+        "conservatorship lawyer"
+      ],
+      "local_keyword_patterns": [
+        "child custody lawyer {location}",
+        "{location} child custody lawyer",
+        "child custody attorney {location}",
+        "{location} child custody attorney"
+      ],
+      "national_keyword_patterns": [
+        "child custody lawyer",
+        "child custody attorney",
+        "conservatorship lawyer"
+      ],
+      "examples_found_in_money_terms": [
+        "austin child custody lawyer",
+        "austin child custody attorney",
+        "seattle child custody lawyer",
+        "child custody lawyer riverside",
+        "child custody lawyer long beach",
+        "beverly hills child custody lawyer"
+      ],
+      "notes": "",
+      "needs_manual_review": false
+    },
+    {
+      "parent_vertical": "Family Law",
+      "practice_area_name": "Child Support",
+      "display_name": "Child Support",
+      "normalized_id": "child_support",
+      "synonyms": [],
+      "base_keyword_roots": [
+        "child support lawyer",
+        "child support attorney"
+      ],
+      "local_keyword_patterns": [
+        "child support lawyer {location}",
+        "{location} child support lawyer",
+        "child support attorney {location}",
+        "{location} child support attorney"
+      ],
+      "national_keyword_patterns": [
+        "child support lawyer",
+        "child support attorney"
+      ],
+      "examples_found_in_money_terms": [
+        "seattle child support lawyer",
+        "riverside child support lawyer",
+        "long beach child support lawyer",
+        "child support lawyer beverly hills",
+        "child support lawyer denver",
+        "austin child support lawyer"
+      ],
+      "notes": "",
+      "needs_manual_review": false
+    },
+    {
+      "parent_vertical": "Family Law",
+      "practice_area_name": "Property Division",
+      "display_name": "Property Division",
+      "normalized_id": "property_division",
+      "synonyms": [
+        "marital assets lawyer",
+        "asset division attorney"
+      ],
+      "base_keyword_roots": [
+        "property division lawyer",
+        "property division attorney"
+      ],
+      "local_keyword_patterns": [
+        "property division lawyer {location}",
+        "{location} property division lawyer",
+        "property division attorney {location}",
+        "{location} property division attorney"
+      ],
+      "national_keyword_patterns": [
+        "property division lawyer",
+        "property division attorney"
+      ],
+      "examples_found_in_money_terms": [
+        "riverside property division lawyer",
+        "long beach property division lawyer",
+        "beverly hills property division lawyer",
+        "denver property division lawyer",
+        "annapolis marital property division lawyer",
+        "fort collins property division lawyer"
+      ],
+      "notes": "",
+      "needs_manual_review": false
+    },
+    {
+      "parent_vertical": "Family Law",
+      "practice_area_name": "Spousal Support / Alimony",
+      "display_name": "Spousal Support / Alimony",
+      "normalized_id": "spousal_support_alimony",
+      "synonyms": [
+        "alimony lawyer",
+        "maintenance attorney"
+      ],
+      "base_keyword_roots": [
+        "spousal support lawyer",
+        "spousal support attorney",
+        "alimony lawyer",
+        "alimony attorney"
+      ],
+      "local_keyword_patterns": [
+        "spousal support lawyer {location}",
+        "{location} spousal support lawyer",
+        "alimony lawyer {location}",
+        "{location} alimony lawyer",
+        "alimony attorney {location}",
+        "{location} alimony attorney"
+      ],
+      "national_keyword_patterns": [
+        "spousal support lawyer",
+        "alimony lawyer",
+        "alimony attorney"
+      ],
+      "examples_found_in_money_terms": [
+        "seattle spousal support lawyer",
+        "riverside spousal support lawyer",
+        "long beach spousal support lawyer",
+        "beverly hills spousal support lawyer",
+        "alimony lawyer denver",
+        "alimony lawyer austin"
+      ],
+      "notes": "",
+      "needs_manual_review": false
+    },
+    {
+      "parent_vertical": "Family Law",
+      "practice_area_name": "High-Net-Worth / High-Asset Divorce",
+      "display_name": "High-Asset Divorce",
+      "normalized_id": "high_asset_divorce",
+      "synonyms": [
+        "high net worth divorce lawyer",
+        "complex property divorce attorney"
+      ],
+      "base_keyword_roots": [
+        "high asset divorce lawyer",
+        "high asset divorce attorney",
+        "high net worth divorce lawyer",
+        "high net worth divorce attorney"
+      ],
+      "local_keyword_patterns": [
+        "high asset divorce lawyer {location}",
+        "{location} high asset divorce lawyer",
+        "high asset divorce attorney {location}",
+        "{location} high asset divorce attorney",
+        "high net worth divorce lawyer {location}",
+        "{location} high net worth divorce lawyer"
+      ],
+      "national_keyword_patterns": [
+        "high asset divorce lawyer",
+        "high net worth divorce lawyer",
+        "high asset divorce attorney",
+        "high net worth divorce attorney"
+      ],
+      "examples_found_in_money_terms": [
+        "austin high asset divorce lawyer",
+        "austin high asset divorce attorney",
+        "high asset divorce lawyer seattle",
+        "denver high asset divorce lawyer",
+        "round rock high net worth divorce lawyer",
+        "fort collins high asset divorce lawyer"
+      ],
+      "notes": "",
+      "needs_manual_review": false
+    },
+    {
+      "parent_vertical": "Family Law",
+      "practice_area_name": "Uncontested Divorce",
+      "display_name": "Uncontested Divorce",
+      "normalized_id": "uncontested_divorce",
+      "synonyms": [
+        "amicable divorce lawyer",
+        "no-contest divorce attorney"
+      ],
+      "base_keyword_roots": [
+        "uncontested divorce lawyer",
+        "uncontested divorce attorney"
+      ],
+      "local_keyword_patterns": [
+        "uncontested divorce lawyer {location}",
+        "{location} uncontested divorce lawyer"
+      ],
+      "national_keyword_patterns": [
+        "uncontested divorce lawyer",
+        "uncontested divorce attorney"
+      ],
+      "examples_found_in_money_terms": [
+        "riverside uncontested divorce lawyer",
+        "long beach uncontested divorce lawyer",
+        "beverly hills uncontested divorce lawyer",
+        "austin uncontested divorce lawyer",
+        "fort collins uncontested divorce lawyer",
+        "uncontested divorce attorney round rock"
+      ],
+      "notes": "",
+      "needs_manual_review": false
+    },
+    {
+      "parent_vertical": "Family Law",
+      "practice_area_name": "Prenuptial / Postnuptial Agreements",
+      "display_name": "Prenuptial & Postnuptial Agreements",
+      "normalized_id": "prenuptial_agreements",
+      "synonyms": [
+        "prenup lawyer",
+        "premarital agreement attorney"
+      ],
+      "base_keyword_roots": [
+        "prenuptial agreement lawyer",
+        "prenuptial agreement attorney",
+        "postnuptial agreement lawyer",
+        "postmarital agreement lawyer",
+        "prenup lawyer",
+        "separation agreement lawyer"
+      ],
+      "local_keyword_patterns": [
+        "prenuptial agreement lawyer {location}",
+        "{location} prenuptial agreement lawyer",
+        "prenup lawyer {location}",
+        "{location} prenup lawyer"
+      ],
+      "national_keyword_patterns": [
+        "prenuptial agreement lawyer",
+        "prenuptial agreement attorney",
+        "prenup lawyer"
+      ],
+      "examples_found_in_money_terms": [
+        "seattle prenuptial agreement lawyer",
+        "prenuptial agreement lawyer riverside",
+        "long beach prenuptial agreement lawyer",
+        "prenuptial agreement lawyer beverly hills",
+        "denver prenup lawyer",
+        "austin prenuptial agreement lawyer"
+      ],
+      "notes": "",
+      "needs_manual_review": false
+    },
+    {
+      "parent_vertical": "Family Law",
+      "practice_area_name": "Paternity",
+      "display_name": "Paternity",
+      "normalized_id": "paternity",
+      "synonyms": [
+        "paternity lawyer",
+        "father's rights attorney",
+        "unmarried parents lawyer"
+      ],
+      "base_keyword_roots": [
+        "paternity lawyer",
+        "paternity attorney",
+        "father rights lawyer",
+        "grandparents rights lawyer",
+        "parental alienation lawyer"
+      ],
+      "local_keyword_patterns": [
+        "paternity lawyer {location}",
+        "{location} paternity lawyer",
+        "father rights lawyer {location}",
+        "{location} father rights lawyer"
+      ],
+      "national_keyword_patterns": [
+        "paternity lawyer",
+        "paternity attorney",
+        "father rights lawyer"
+      ],
+      "examples_found_in_money_terms": [
+        "paternity lawyer seattle",
+        "paternity lawyer riverside",
+        "paternity lawyer long beach",
+        "beverly hills paternity lawyer",
+        "austin paternity lawyer",
+        "round rock father rights lawyer"
+      ],
+      "notes": "",
+      "needs_manual_review": false
+    },
+    {
+      "parent_vertical": "Family Law",
+      "practice_area_name": "Adoption",
+      "display_name": "Adoption",
+      "normalized_id": "adoption",
+      "synonyms": [
+        "adoptive family lawyer"
+      ],
+      "base_keyword_roots": [
+        "adoption lawyer",
+        "adoption attorney"
+      ],
+      "local_keyword_patterns": [
+        "adoption lawyer {location}",
+        "{location} adoption lawyer",
+        "adoption attorney {location}",
+        "{location} adoption attorney"
+      ],
+      "national_keyword_patterns": [
+        "adoption lawyer",
+        "adoption attorney"
+      ],
+      "examples_found_in_money_terms": [
+        "adoption lawyer seattle",
+        "riverside adoption lawyer",
+        "beverly hills adoption lawyer",
+        "austin adoption lawyer"
+      ],
+      "notes": "",
+      "needs_manual_review": false
+    },
+    {
+      "parent_vertical": "Family Law",
+      "practice_area_name": "Protective Orders / Domestic Violence",
+      "display_name": "Protective Orders & Domestic Violence",
+      "normalized_id": "protective_orders_domestic_violence",
+      "synonyms": [
+        "restraining order lawyer",
+        "protective order attorney",
+        "domestic abuse lawyer"
+      ],
+      "base_keyword_roots": [
+        "protective order lawyer",
+        "protective order attorney",
+        "domestic violence lawyer",
+        "domestic violence attorney"
+      ],
+      "local_keyword_patterns": [
+        "protective order lawyer {location}",
+        "{location} protective order lawyer",
+        "domestic violence lawyer {location}",
+        "{location} domestic violence lawyer"
+      ],
+      "national_keyword_patterns": [
+        "protective order lawyer",
+        "domestic violence lawyer"
+      ],
+      "examples_found_in_money_terms": [
+        "seattle domestic violence lawyer",
+        "riverside domestic violence lawyer",
+        "long beach domestic violence lawyer",
+        "domestic violence lawyer beverly hills",
+        "orange county domestic violence lawyer",
+        "anaheim domestic violence lawyer"
+      ],
+      "notes": "Note: 'domestic violence' in a criminal context maps to criminal defense; here it refers to the civil/family law protective-order context",
+      "needs_manual_review": false
+    },
+    {
+      "parent_vertical": "Family Law",
+      "practice_area_name": "Military Divorce",
+      "display_name": "Military Divorce",
+      "normalized_id": "military_divorce",
+      "synonyms": [
+        "military family lawyer",
+        "armed forces divorce attorney"
+      ],
+      "base_keyword_roots": [
+        "military divorce lawyer",
+        "military divorce attorney"
+      ],
+      "local_keyword_patterns": [
+        "military divorce lawyer {location}",
+        "{location} military divorce lawyer"
+      ],
+      "national_keyword_patterns": [
+        "military divorce lawyer",
+        "military divorce attorney"
+      ],
+      "examples_found_in_money_terms": [
+        "seattle military divorce lawyer",
+        "riverside military divorce lawyer",
+        "long beach military divorce lawyer",
+        "beverly hills military divorce lawyer",
+        "austin military divorce lawyer"
+      ],
+      "notes": "",
+      "needs_manual_review": false
+    },
+    {
+      "parent_vertical": "Family Law",
+      "practice_area_name": "Divorce Mediation",
+      "display_name": "Divorce Mediation",
+      "normalized_id": "divorce_mediation",
+      "synonyms": [
+        "collaborative divorce mediator"
+      ],
+      "base_keyword_roots": [
+        "divorce mediation lawyer",
+        "divorce mediator"
+      ],
+      "local_keyword_patterns": [
+        "divorce mediation lawyer {location}",
+        "{location} divorce mediation lawyer"
+      ],
+      "national_keyword_patterns": [
+        "divorce mediation lawyer",
+        "divorce mediator"
+      ],
+      "examples_found_in_money_terms": [
+        "seattle divorce mediation lawyer",
+        "long beach divorce mediation lawyer",
+        "beverly hills divorce mediation lawyer",
+        "denver divorce mediation lawyer",
+        "austin collaborative divorce lawyer",
+        "fort collins mediation lawyer"
+      ],
+      "notes": "",
+      "needs_manual_review": false
+    },
+    {
+      "parent_vertical": "Family Law",
+      "practice_area_name": "Name Change",
+      "display_name": "Name Change",
+      "normalized_id": "name_change",
+      "synonyms": [],
+      "base_keyword_roots": [
+        "name change lawyer",
+        "name change attorney"
+      ],
+      "local_keyword_patterns": [
+        "name change lawyer {location}",
+        "{location} name change lawyer"
+      ],
+      "national_keyword_patterns": [
+        "name change lawyer"
+      ],
+      "examples_found_in_money_terms": [
+        "austin name change lawyer"
+      ],
+      "notes": "",
+      "needs_manual_review": false
+    },
+    {
+      "parent_vertical": "Family Law",
+      "practice_area_name": "LGBTQ+ Family Law",
+      "display_name": "LGBTQ+ Family Law",
+      "normalized_id": "lgbtq_family_law",
+      "synonyms": [
+        "same-sex divorce lawyer",
+        "LGBTQ family attorney"
+      ],
+      "base_keyword_roots": [
+        "lgbt family lawyer",
+        "lgbtq family attorney"
+      ],
+      "local_keyword_patterns": [
+        "lgbtq family lawyer {location}",
+        "{location} lgbtq family lawyer"
+      ],
+      "national_keyword_patterns": [
+        "lgbtq family lawyer",
+        "lgbtq family attorney"
+      ],
+      "examples_found_in_money_terms": [
+        "seattle lgbt family lawyer",
+        "beverly hills lgbtq+ family lawyer"
+      ],
+      "notes": "",
+      "needs_manual_review": false
+    },
+    {
+      "parent_vertical": "Criminal Defense",
+      "practice_area_name": "Criminal Defense (General)",
+      "display_name": "Criminal Defense",
+      "normalized_id": "criminal_defense",
+      "synonyms": [
+        "criminal lawyer",
+        "criminal attorney",
+        "defense lawyer"
+      ],
+      "base_keyword_roots": [
+        "criminal defense lawyer",
+        "criminal defense attorney",
+        "criminal lawyer",
+        "criminal attorney"
+      ],
+      "local_keyword_patterns": [
+        "criminal defense lawyer {location}",
+        "{location} criminal defense lawyer",
+        "criminal defense attorney {location}",
+        "{location} criminal defense attorney",
+        "criminal lawyer {location}",
+        "{location} criminal lawyer",
+        "criminal attorney {location}",
+        "{location} criminal attorney"
+      ],
+      "national_keyword_patterns": [
+        "criminal defense lawyer",
+        "criminal defense attorney",
+        "criminal lawyer",
+        "criminal attorney"
+      ],
+      "examples_found_in_money_terms": [
+        "orange county criminal defense lawyer",
+        "anaheim criminal defense lawyer",
+        "tustin criminal defense lawyer",
+        "riverside criminal attorneys",
+        "riverside criminal defense lawyer",
+        "federal criminal defense lawyer anaheim"
+      ],
+      "notes": "",
+      "needs_manual_review": false
+    },
+    {
+      "parent_vertical": "Criminal Defense",
+      "practice_area_name": "DUI / DWI",
+      "display_name": "DUI / DWI Defense",
+      "normalized_id": "dui_dwi",
+      "synonyms": [
+        "drunk driving defense lawyer",
+        "impaired driving attorney"
+      ],
+      "base_keyword_roots": [
+        "dui lawyer",
+        "dui attorney",
+        "dwi lawyer",
+        "dwi attorney",
+        "dui defense lawyer",
+        "dwi defense lawyer"
+      ],
+      "local_keyword_patterns": [
+        "dui lawyer {location}",
+        "{location} dui lawyer",
+        "dui attorney {location}",
+        "{location} dui attorney",
+        "dwi lawyer {location}",
+        "{location} dwi lawyer",
+        "dwi attorney {location}",
+        "{location} dwi attorney"
+      ],
+      "national_keyword_patterns": [
+        "dui lawyer",
+        "dui attorney",
+        "dwi lawyer",
+        "dwi attorney"
+      ],
+      "examples_found_in_money_terms": [
+        "arkadelphia dui victim lawyer",
+        "little rock dwi accident victim lawyer",
+        "lawrence dui accident lawyer",
+        "orange county dui lawyer",
+        "anaheim dui lawyer",
+        "dui lawyer tustin"
+      ],
+      "notes": "",
+      "needs_manual_review": false
+    },
+    {
+      "parent_vertical": "Criminal Defense",
+      "practice_area_name": "Drug Crimes",
+      "display_name": "Drug Crimes",
+      "normalized_id": "drug_crimes",
+      "synonyms": [
+        "narcotics defense lawyer",
+        "drug offense attorney"
+      ],
+      "base_keyword_roots": [
+        "drug crime lawyer",
+        "drug crime attorney",
+        "drug possession lawyer"
+      ],
+      "local_keyword_patterns": [
+        "drug crime lawyer {location}",
+        "{location} drug crime lawyer",
+        "drug possession lawyer {location}",
+        "{location} drug possession lawyer"
+      ],
+      "national_keyword_patterns": [
+        "drug crime lawyer",
+        "drug possession lawyer"
+      ],
+      "examples_found_in_money_terms": [
+        "houston defective drug lawyer",
+        "dallas dangerous drug lawyer",
+        "fort worth dangerous drug lawyer",
+        "orange county drug possession lawyer",
+        "anaheim drug crime lawyer",
+        "riverside drug crimes attorney"
+      ],
+      "notes": "",
+      "needs_manual_review": false
+    },
+    {
+      "parent_vertical": "Criminal Defense",
+      "practice_area_name": "Theft / Burglary / Robbery",
+      "display_name": "Theft, Burglary & Robbery",
+      "normalized_id": "theft_crimes",
+      "synonyms": [
+        "shoplifting lawyer",
+        "larceny attorney"
+      ],
+      "base_keyword_roots": [
+        "theft lawyer",
+        "theft attorney",
+        "robbery defense lawyer",
+        "burglary lawyer"
+      ],
+      "local_keyword_patterns": [
+        "theft lawyer {location}",
+        "{location} theft lawyer",
+        "burglary lawyer {location}",
+        "{location} burglary lawyer"
+      ],
+      "national_keyword_patterns": [
+        "theft lawyer",
+        "robbery defense lawyer",
+        "burglary lawyer"
+      ],
+      "examples_found_in_money_terms": [
+        "burglary lawyer orange county",
+        "theft lawyer anaheim ca",
+        "theft lawyer orange county",
+        "theft lawyer newport beach",
+        "theft lawyer riverside",
+        "theft lawyer tustin"
+      ],
+      "notes": "",
+      "needs_manual_review": false
+    },
+    {
+      "parent_vertical": "Criminal Defense",
+      "practice_area_name": "Assault & Violent Crimes",
+      "display_name": "Assault & Violent Crimes",
+      "normalized_id": "assault_violent_crimes",
+      "synonyms": [
+        "battery lawyer",
+        "violent crime attorney",
+        "manslaughter defense lawyer"
+      ],
+      "base_keyword_roots": [
+        "assault lawyer",
+        "assault attorney",
+        "violent crime lawyer",
+        "manslaughter lawyer"
+      ],
+      "local_keyword_patterns": [
+        "assault lawyer {location}",
+        "{location} assault lawyer",
+        "violent crime lawyer {location}",
+        "{location} violent crime lawyer"
+      ],
+      "national_keyword_patterns": [
+        "assault lawyer",
+        "violent crime lawyer",
+        "manslaughter lawyer"
+      ],
+      "examples_found_in_money_terms": [
+        "st. louis sexual assault lawyer",
+        "st. louis rideshare sexual assault lawyer",
+        "houston uber & lyft sexual assault lawyer",
+        "sexual assault lawyer houston",
+        "tampa sexual assault lawyer",
+        "orange county sexual assault lawyer"
+      ],
+      "notes": "",
+      "needs_manual_review": false
+    },
+    {
+      "parent_vertical": "Criminal Defense",
+      "practice_area_name": "Domestic Violence Defense",
+      "display_name": "Domestic Violence Defense",
+      "normalized_id": "domestic_violence_defense",
+      "synonyms": [
+        "domestic abuse defense lawyer"
+      ],
+      "base_keyword_roots": [
+        "domestic violence defense lawyer",
+        "domestic violence defense attorney"
+      ],
+      "local_keyword_patterns": [
+        "domestic violence defense lawyer {location}",
+        "{location} domestic violence defense lawyer",
+        "domestic violence lawyer {location}",
+        "{location} domestic violence lawyer"
+      ],
+      "national_keyword_patterns": [
+        "domestic violence defense lawyer",
+        "domestic violence attorney"
+      ],
+      "examples_found_in_money_terms": [
+        "woodbury domestic abuse lawyer",
+        "greely domestic violence defense lawyer",
+        "weld county domestic violence defense lawyer",
+        "scottsdale domestic violence defense lawyer",
+        "phoenix domestic violence defense lawyer"
+      ],
+      "notes": "Overlaps with Family Law / Protective Orders. In criminal context = defense of accused.",
+      "needs_manual_review": false
+    },
+    {
+      "parent_vertical": "Criminal Defense",
+      "practice_area_name": "Sex Crimes",
+      "display_name": "Sex Crimes Defense",
+      "normalized_id": "sex_crimes",
+      "synonyms": [
+        "sex offense lawyer",
+        "sexual misconduct attorney"
+      ],
+      "base_keyword_roots": [
+        "sex crime lawyer",
+        "sex crime attorney",
+        "sex crimes lawyer",
+        "sexual assault defense lawyer"
+      ],
+      "local_keyword_patterns": [
+        "sex crime lawyer {location}",
+        "{location} sex crime lawyer",
+        "sex crimes lawyer {location}",
+        "{location} sex crimes lawyer"
+      ],
+      "national_keyword_patterns": [
+        "sex crime lawyer",
+        "sex crimes lawyer",
+        "sex crime attorney"
+      ],
+      "examples_found_in_money_terms": [
+        "prostitution lawyer anaheim",
+        "sex crime lawyer anaheim",
+        "solicitation lawyer anaheim",
+        "prostitution lawyer irvine",
+        "sex crime lawyer irvine",
+        "solicitation lawyer irvine"
+      ],
+      "notes": "",
+      "needs_manual_review": false
+    },
+    {
+      "parent_vertical": "Criminal Defense",
+      "practice_area_name": "Juvenile Defense",
+      "display_name": "Juvenile Defense",
+      "normalized_id": "juvenile_defense",
+      "synonyms": [
+        "minor defense lawyer",
+        "youthful offender attorney"
+      ],
+      "base_keyword_roots": [
+        "juvenile defense lawyer",
+        "juvenile defense attorney"
+      ],
+      "local_keyword_patterns": [
+        "juvenile defense lawyer {location}",
+        "{location} juvenile defense lawyer"
+      ],
+      "national_keyword_patterns": [
+        "juvenile defense lawyer",
+        "juvenile defense attorney"
+      ],
+      "examples_found_in_money_terms": [
+        "woodbury juvenile crimes lawyer",
+        "greely juvenile defense lawyer",
+        "weld county juvenile defense lawyer"
+      ],
+      "notes": "",
+      "needs_manual_review": false
+    },
+    {
+      "parent_vertical": "Criminal Defense",
+      "practice_area_name": "Homicide / Murder Defense",
+      "display_name": "Homicide & Murder Defense",
+      "normalized_id": "homicide",
+      "synonyms": [
+        "murder defense lawyer",
+        "manslaughter attorney"
+      ],
+      "base_keyword_roots": [
+        "homicide lawyer",
+        "homicide attorney",
+        "murder defense lawyer"
+      ],
+      "local_keyword_patterns": [
+        "homicide lawyer {location}",
+        "{location} homicide lawyer"
+      ],
+      "national_keyword_patterns": [
+        "homicide lawyer",
+        "homicide attorney",
+        "murder defense lawyer"
+      ],
+      "examples_found_in_money_terms": [
+        "indianapolis homicide defense lawyer"
+      ],
+      "notes": "",
+      "needs_manual_review": false
+    },
+    {
+      "parent_vertical": "Criminal Defense",
+      "practice_area_name": "Expungement",
+      "display_name": "Expungement",
+      "normalized_id": "expungement",
+      "synonyms": [
+        "record sealing lawyer",
+        "criminal record clearing attorney"
+      ],
+      "base_keyword_roots": [
+        "expungement lawyer",
+        "expungement attorney"
+      ],
+      "local_keyword_patterns": [
+        "expungement lawyer {location}",
+        "{location} expungement lawyer",
+        "expungement attorney {location}",
+        "{location} expungement attorney"
+      ],
+      "national_keyword_patterns": [
+        "expungement lawyer",
+        "expungement attorney"
+      ],
+      "examples_found_in_money_terms": [
+        "riverside expungement attorney",
+        "expungement lawyer anaheim",
+        "expungement lawyer irvine",
+        "early termination of probation lawyer orange county",
+        "expungement lawyer orange county",
+        "petition for factual innocence lawyer orange county"
+      ],
+      "notes": "",
+      "needs_manual_review": false
+    },
+    {
+      "parent_vertical": "Criminal Defense",
+      "practice_area_name": "White Collar Crime",
+      "display_name": "White Collar Crime",
+      "normalized_id": "white_collar_crime",
+      "synonyms": [
+        "fraud defense lawyer",
+        "financial crime attorney"
+      ],
+      "base_keyword_roots": [
+        "white collar crime lawyer",
+        "white collar crime attorney",
+        "fraud defense lawyer"
+      ],
+      "local_keyword_patterns": [
+        "white collar crime lawyer {location}",
+        "{location} white collar crime lawyer",
+        "fraud lawyer {location}",
+        "{location} fraud lawyer"
+      ],
+      "national_keyword_patterns": [
+        "white collar crime lawyer",
+        "fraud defense lawyer",
+        "fraud lawyer"
+      ],
+      "examples_found_in_money_terms": [
+        "investment fraud lawyer",
+        "retirement fraud lawyer bradenton",
+        "retirement fraud lawyer sarasota",
+        "white collar crime lawyer anaheim",
+        "white collar crime lawyer irvine",
+        "fraud lawyer orange county"
+      ],
+      "notes": "",
+      "needs_manual_review": false
+    },
+    {
+      "parent_vertical": "Criminal Defense",
+      "practice_area_name": "Gun Crimes",
+      "display_name": "Gun Crimes",
+      "normalized_id": "gun_crimes",
+      "synonyms": [
+        "firearms offense lawyer",
+        "weapons charge attorney"
+      ],
+      "base_keyword_roots": [
+        "gun crime lawyer",
+        "gun charge lawyer",
+        "firearms offense lawyer",
+        "gun lawyer"
+      ],
+      "local_keyword_patterns": [
+        "gun crime lawyer {location}",
+        "{location} gun crime lawyer",
+        "gun lawyer {location}",
+        "{location} gun lawyer"
+      ],
+      "national_keyword_patterns": [
+        "gun crime lawyer",
+        "gun charge lawyer",
+        "firearms offense lawyer"
+      ],
+      "examples_found_in_money_terms": [
+        "orange county gun crime lawyer",
+        "gun charge lawyer anaheim ca",
+        "gun lawyer anaheim",
+        "gun lawyer newport beach",
+        "gun lawyer riverside",
+        "laguna beach gun lawyer"
+      ],
+      "notes": "",
+      "needs_manual_review": false
+    },
+    {
+      "parent_vertical": "Criminal Defense",
+      "practice_area_name": "Federal Criminal Defense",
+      "display_name": "Federal Criminal Defense",
+      "normalized_id": "federal_criminal",
+      "synonyms": [
+        "federal defense lawyer",
+        "federal indictment attorney"
+      ],
+      "base_keyword_roots": [
+        "federal criminal defense lawyer",
+        "federal criminal defense attorney"
+      ],
+      "local_keyword_patterns": [
+        "federal criminal defense lawyer {location}",
+        "{location} federal criminal defense lawyer"
+      ],
+      "national_keyword_patterns": [
+        "federal criminal defense lawyer",
+        "federal criminal defense attorney"
+      ],
+      "examples_found_in_money_terms": [
+        "federal criminal defense lawyer anaheim",
+        "federal criminal lawyer irvine",
+        "federal criminal lawyer riverside",
+        "federal criminal defense lawyer tustin",
+        "indianapolis federal offenses lawyer"
+      ],
+      "notes": "",
+      "needs_manual_review": false
+    },
+    {
+      "parent_vertical": "Estate Planning / Probate",
+      "practice_area_name": "Estate Planning",
+      "display_name": "Estate Planning",
+      "normalized_id": "estate_planning",
+      "synonyms": [
+        "estate attorney",
+        "legacy planning lawyer",
+        "wills and trusts attorney"
+      ],
+      "base_keyword_roots": [
+        "estate planning lawyer",
+        "estate planning attorney",
+        "asset protection attorney",
+        "estate tax planning lawyer",
+        "advance health care directive lawyer",
+        "power of attorney lawyer"
+      ],
+      "local_keyword_patterns": [
+        "estate planning lawyer {location}",
+        "{location} estate planning lawyer",
+        "estate planning attorney {location}",
+        "{location} estate planning attorney"
+      ],
+      "national_keyword_patterns": [
+        "estate planning lawyer",
+        "estate planning attorney",
+        "estate planning lawyer",
+        "asset protection attorney"
+      ],
+      "examples_found_in_money_terms": [
+        "nyc asset protection attorney",
+        "san diego asset protection lawyer",
+        "new york asset protection attorney",
+        "san diego asset protection attorney",
+        "nyc medicaid planning attorney",
+        "new york asset protection planning attorney"
+      ],
+      "notes": "",
+      "needs_manual_review": false
+    },
+    {
+      "parent_vertical": "Estate Planning / Probate",
+      "practice_area_name": "Probate",
+      "display_name": "Probate",
+      "normalized_id": "probate",
+      "synonyms": [
+        "estate administration lawyer",
+        "probate court attorney"
+      ],
+      "base_keyword_roots": [
+        "probate lawyer",
+        "probate attorney"
+      ],
+      "local_keyword_patterns": [
+        "probate lawyer {location}",
+        "{location} probate lawyer",
+        "probate attorney {location}",
+        "{location} probate attorney"
+      ],
+      "national_keyword_patterns": [
+        "probate lawyer",
+        "probate attorney"
+      ],
+      "examples_found_in_money_terms": [
+        "new york probate attorney",
+        "new york city probate attorney",
+        "san diego probate attorney",
+        "probate lawyer st louis",
+        "st. louis estate litigation lawyer",
+        "st. louis will contests lawyer"
+      ],
+      "notes": "",
+      "needs_manual_review": false
+    },
+    {
+      "parent_vertical": "Estate Planning / Probate",
+      "practice_area_name": "Wills",
+      "display_name": "Wills",
+      "normalized_id": "wills",
+      "synonyms": [
+        "will drafting lawyer",
+        "last will attorney"
+      ],
+      "base_keyword_roots": [
+        "wills lawyer",
+        "wills attorney",
+        "will lawyer",
+        "will attorney"
+      ],
+      "local_keyword_patterns": [
+        "wills lawyer {location}",
+        "{location} wills lawyer"
+      ],
+      "national_keyword_patterns": [
+        "wills lawyer",
+        "wills attorney",
+        "will attorney"
+      ],
+      "examples_found_in_money_terms": [
+        "st. louis wills lawyer",
+        "st. louis beneficiary deed lawyer"
+      ],
+      "notes": "",
+      "needs_manual_review": false
+    },
+    {
+      "parent_vertical": "Estate Planning / Probate",
+      "practice_area_name": "Trusts",
+      "display_name": "Trusts",
+      "normalized_id": "trusts",
+      "synonyms": [
+        "trust administration lawyer",
+        "living trust attorney"
+      ],
+      "base_keyword_roots": [
+        "trust lawyer",
+        "trust attorney",
+        "living trust lawyer",
+        "revocable living trust lawyer",
+        "irrevocable trust lawyer"
+      ],
+      "local_keyword_patterns": [
+        "trust lawyer {location}",
+        "{location} trust lawyer",
+        "living trust lawyer {location}",
+        "{location} living trust lawyer"
+      ],
+      "national_keyword_patterns": [
+        "trust lawyer",
+        "trust attorney",
+        "living trust lawyer",
+        "revocable living trust lawyer",
+        "irrevocable trust lawyer"
+      ],
+      "examples_found_in_money_terms": [
+        "irrevocable life insurance trusts lawyer",
+        "san diego trust attorney",
+        "st. louis revocable living trust lawyer",
+        "st. louis trusts lawyer"
+      ],
+      "notes": "",
+      "needs_manual_review": false
+    },
+    {
+      "parent_vertical": "Business Law / Commercial Litigation",
+      "practice_area_name": "Business Law (General)",
+      "display_name": "Business Law",
+      "normalized_id": "business_law",
+      "synonyms": [
+        "corporate attorney",
+        "small business lawyer",
+        "startup attorney"
+      ],
+      "base_keyword_roots": [
+        "business law lawyer",
+        "business lawyer",
+        "business attorney",
+        "small business lawyer",
+        "startup lawyer",
+        "outside general counsel",
+        "corporate governance lawyer"
+      ],
+      "local_keyword_patterns": [
+        "business law lawyer {location}",
+        "{location} business law lawyer",
+        "business lawyer {location}",
+        "{location} business lawyer",
+        "business attorney {location}",
+        "{location} business attorney"
+      ],
+      "national_keyword_patterns": [
+        "business law lawyer",
+        "business lawyer",
+        "business attorney",
+        "small business lawyer",
+        "startup lawyer",
+        "corporate governance lawyer"
+      ],
+      "examples_found_in_money_terms": [
+        "saas general counsel",
+        "business lawyer new york",
+        "business formation lawyer new york",
+        "new york business succession lawyer",
+        "new york franchise lawyer",
+        "new york executive compensation lawyer"
+      ],
+      "notes": "",
+      "needs_manual_review": false
+    },
+    {
+      "parent_vertical": "Business Law / Commercial Litigation",
+      "practice_area_name": "Business Litigation / Contract Disputes",
+      "display_name": "Business Litigation & Contract Disputes",
+      "normalized_id": "business_litigation",
+      "synonyms": [
+        "commercial litigation lawyer",
+        "contract dispute attorney"
+      ],
+      "base_keyword_roots": [
+        "business litigation lawyer",
+        "business litigation attorney",
+        "contract disputes lawyer",
+        "contract disputes attorney",
+        "breach of contract lawyer",
+        "commercial litigation lawyer"
+      ],
+      "local_keyword_patterns": [
+        "business litigation lawyer {location}",
+        "{location} business litigation lawyer",
+        "contract disputes lawyer {location}",
+        "{location} contract disputes lawyer"
+      ],
+      "national_keyword_patterns": [
+        "business litigation lawyer",
+        "contract disputes lawyer",
+        "breach of contract lawyer",
+        "commercial litigation lawyer"
+      ],
+      "examples_found_in_money_terms": [
+        "business litigation lawyer dallas",
+        "dallas contract disputes lawyer",
+        "breach of contract lawyer dallas",
+        "fort worth business litigation lawyer",
+        "fort worth contract disputes lawyer",
+        "fort worth breach of contract lawyer"
+      ],
+      "notes": "",
+      "needs_manual_review": false
+    },
+    {
+      "parent_vertical": "Business Law / Commercial Litigation",
+      "practice_area_name": "Insurance Bad Faith",
+      "display_name": "Insurance Bad Faith",
+      "normalized_id": "insurance_bad_faith",
+      "synonyms": [
+        "insurance claim denial lawyer",
+        "bad faith insurer attorney"
+      ],
+      "base_keyword_roots": [
+        "insurance bad faith lawyer",
+        "insurance bad faith attorney",
+        "insurance denial lawyer"
+      ],
+      "local_keyword_patterns": [
+        "insurance bad faith lawyer {location}",
+        "{location} insurance bad faith lawyer"
+      ],
+      "national_keyword_patterns": [
+        "insurance bad faith lawyer",
+        "insurance bad faith attorney",
+        "insurance denial lawyer"
+      ],
+      "examples_found_in_money_terms": [
+        "dallas insurance bad faith lawyer",
+        "insurance denial lawyer dallas",
+        "fort worth insurance bad faith lawyer",
+        "fort worth insurance denial lawyer",
+        "arlington tx insurance bad faith lawyer",
+        "arlington tx insurance denial lawyer"
+      ],
+      "notes": "",
+      "needs_manual_review": false
+    },
+    {
+      "parent_vertical": "Business Law / Commercial Litigation",
+      "practice_area_name": "Amazon Seller / Platform Account Defense",
+      "display_name": "Amazon Seller & Platform Account Defense",
+      "normalized_id": "platform_account_defense",
+      "synonyms": [
+        "Amazon suspension lawyer",
+        "Airbnb deactivation attorney"
+      ],
+      "base_keyword_roots": [
+        "amazon seller account suspension lawyer",
+        "amazon brand enforcement attorney",
+        "airbnb account deactivation lawyer",
+        "meta account restriction attorney",
+        "short-term rental attorney",
+        "udrp attorney"
+      ],
+      "local_keyword_patterns": [],
+      "national_keyword_patterns": [
+        "amazon seller account suspension lawyer",
+        "airbnb account deactivation lawyer",
+        "amazon brand enforcement attorney",
+        "meta account restriction attorney"
+      ],
+      "examples_found_in_money_terms": [
+        "airbnb account deactivation lawyer",
+        "amazon seller account suspension lawyer",
+        "amazon brand enforcement attorney",
+        "meta account restriction attorney",
+        "short-term rental attorney",
+        "udrp attorney"
+      ],
+      "notes": "National practice only. Found in Traverse Legal client data.",
+      "needs_manual_review": false
+    },
+    {
+      "parent_vertical": "Business Law / Commercial Litigation",
+      "practice_area_name": "AI Compliance & Governance",
+      "display_name": "AI Compliance & Governance Law",
+      "normalized_id": "ai_compliance_governance",
+      "synonyms": [
+        "AI law attorney",
+        "technology compliance lawyer"
+      ],
+      "base_keyword_roots": [
+        "ai compliance attorney",
+        "ai governance lawyer",
+        "cipa defense attorney",
+        "trademark threat letter response lawyer",
+        "platform terms of service attorney"
+      ],
+      "local_keyword_patterns": [],
+      "national_keyword_patterns": [
+        "ai compliance attorney",
+        "ai governance lawyer",
+        "cipa defense attorney"
+      ],
+      "examples_found_in_money_terms": [
+        "ai compliance attorney",
+        "ai governance lawyer",
+        "trademark threat letter response lawyer",
+        "cipa defense attorney"
+      ],
+      "notes": "Emerging area. National practice only. Found in Traverse Legal client data.",
+      "needs_manual_review": true
+    },
+    {
+      "parent_vertical": "Employment Law",
+      "practice_area_name": "Employment Law (General)",
+      "display_name": "Employment Law",
+      "normalized_id": "employment_law",
+      "synonyms": [
+        "labor lawyer",
+        "employee rights attorney"
+      ],
+      "base_keyword_roots": [
+        "employment lawyer",
+        "employment attorney",
+        "labor lawyer"
+      ],
+      "local_keyword_patterns": [
+        "employment lawyer {location}",
+        "{location} employment lawyer",
+        "employment attorney {location}",
+        "{location} employment attorney"
+      ],
+      "national_keyword_patterns": [
+        "employment lawyer",
+        "employment attorney",
+        "labor lawyer"
+      ],
+      "examples_found_in_money_terms": [
+        "california employment lawyer",
+        "employment lawyer san diego",
+        "san diego employment lawyer"
+      ],
+      "notes": "",
+      "needs_manual_review": false
+    },
+    {
+      "parent_vertical": "Employment Law",
+      "practice_area_name": "Employment Discrimination & Civil Rights",
+      "display_name": "Employment Discrimination & Civil Rights",
+      "normalized_id": "employment_discrimination",
+      "synonyms": [
+        "discrimination attorney",
+        "civil rights lawyer",
+        "wrongful termination lawyer"
+      ],
+      "base_keyword_roots": [
+        "employment discrimination lawyer",
+        "employment discrimination attorney",
+        "workplace discrimination lawyer",
+        "civil rights lawyer",
+        "wrongful termination lawyer",
+        "police brutality lawyer"
+      ],
+      "local_keyword_patterns": [
+        "employment discrimination lawyer {location}",
+        "{location} employment discrimination lawyer",
+        "civil rights lawyer {location}",
+        "{location} civil rights lawyer",
+        "wrongful termination lawyer {location}",
+        "{location} wrongful termination lawyer"
+      ],
+      "national_keyword_patterns": [
+        "employment discrimination lawyer",
+        "civil rights lawyer",
+        "wrongful termination lawyer",
+        "police brutality lawyer"
+      ],
+      "examples_found_in_money_terms": [
+        "boston police brutality lawyer",
+        "civil rights lawyer california",
+        "police brutality lawyers california",
+        "california employment discrimination attorney",
+        "wrongful conviction attorney california",
+        "civil rights attorney fresno"
+      ],
+      "notes": "",
+      "needs_manual_review": false
+    },
+    {
+      "parent_vertical": "Employment Law",
+      "practice_area_name": "Wage & Hour / Unpaid Wages",
+      "display_name": "Wage & Hour Claims",
+      "normalized_id": "wage_hour",
+      "synonyms": [
+        "overtime lawyer",
+        "unpaid wages attorney",
+        "labor violations lawyer"
+      ],
+      "base_keyword_roots": [
+        "wage and hour lawyer",
+        "wage and hour attorney",
+        "overtime lawyer",
+        "overtime attorney",
+        "unpaid wages lawyer",
+        "meal and rest breaks lawyer"
+      ],
+      "local_keyword_patterns": [
+        "wage and hour lawyer {location}",
+        "{location} wage and hour lawyer",
+        "overtime lawyer {location}",
+        "{location} overtime lawyer",
+        "unpaid wages lawyer {location}",
+        "{location} unpaid wages lawyer"
+      ],
+      "national_keyword_patterns": [
+        "wage and hour lawyer",
+        "overtime lawyer",
+        "unpaid wages lawyer",
+        "meal and rest breaks lawyer",
+        "california unpaid wages attorney"
+      ],
+      "examples_found_in_money_terms": [
+        "cleveland wage and hour lawyer",
+        "california unpaid wages attorney",
+        "california minimum wage attorneys",
+        "california unreimbursed work expenses lawyers",
+        "california meal and rest breaks lawyers",
+        "california off the clock lawyers"
+      ],
+      "notes": "",
+      "needs_manual_review": false
+    },
+    {
+      "parent_vertical": "Employment Law",
+      "practice_area_name": "Defense Base Act (DBA)",
+      "display_name": "Defense Base Act",
+      "normalized_id": "defense_base_act",
+      "synonyms": [
+        "DBA attorney",
+        "overseas contractor injury lawyer"
+      ],
+      "base_keyword_roots": [
+        "defense base act lawyer",
+        "defense base act attorney",
+        "dba lawyer",
+        "dba attorney",
+        "dba claim attorney"
+      ],
+      "local_keyword_patterns": [],
+      "national_keyword_patterns": [
+        "defense base act lawyer",
+        "defense base act attorney",
+        "dba lawyer",
+        "dba attorney"
+      ],
+      "examples_found_in_money_terms": [
+        "dba lawyer",
+        "defense base act attorney houston tx",
+        "defense base act claim attorneys jacksonville",
+        "virginia defense base act attorney",
+        "defense base act lawyer",
+        "defense base act attorney"
+      ],
+      "notes": "Overlaps with Oilfield/Offshore in PI but is a federal employment law claim for overseas contractors",
+      "needs_manual_review": false
+    },
+    {
+      "parent_vertical": "Immigration",
+      "practice_area_name": "Immigration (General)",
+      "display_name": "Immigration",
+      "normalized_id": "immigration",
+      "synonyms": [
+        "immigration attorney",
+        "visa lawyer",
+        "green card attorney"
+      ],
+      "base_keyword_roots": [
+        "immigration lawyer",
+        "immigration attorney"
+      ],
+      "local_keyword_patterns": [
+        "immigration lawyer {location}",
+        "{location} immigration lawyer",
+        "immigration attorney {location}",
+        "{location} immigration attorney"
+      ],
+      "national_keyword_patterns": [
+        "immigration lawyer",
+        "immigration attorney"
+      ],
+      "examples_found_in_money_terms": [
+        "immigration waiver attorney",
+        "tps immigration lawyer",
+        "immigration lawyer indianapolis",
+        "family immigration lawyer indianapolis"
+      ],
+      "notes": "",
+      "needs_manual_review": false
+    },
+    {
+      "parent_vertical": "Immigration",
+      "practice_area_name": "Asylum & Deportation Defense",
+      "display_name": "Asylum & Deportation Defense",
+      "normalized_id": "asylum_deportation",
+      "synonyms": [
+        "refugee lawyer",
+        "removal defense attorney"
+      ],
+      "base_keyword_roots": [
+        "asylum lawyer",
+        "asylum attorney",
+        "deportation defense lawyer",
+        "deportation defense attorney",
+        "adjustment of status attorney",
+        "tps immigration lawyer"
+      ],
+      "local_keyword_patterns": [
+        "asylum lawyer {location}",
+        "{location} asylum lawyer",
+        "deportation defense lawyer {location}",
+        "{location} deportation defense lawyer"
+      ],
+      "national_keyword_patterns": [
+        "asylum lawyer",
+        "deportation defense lawyer",
+        "adjustment of status attorney",
+        "tps immigration lawyer",
+        "special immigrant juvenile lawyer",
+        "u visa attorney"
+      ],
+      "examples_found_in_money_terms": [
+        "tps immigration lawyer",
+        "indianapolis deportation defense attorney",
+        "asylum lawyer indianapolis",
+        "adjustment of status attorney indianapolis",
+        "indianapolis consular applications lawyer",
+        "indianapolis r visas"
+      ],
+      "notes": "",
+      "needs_manual_review": false
+    },
+    {
+      "parent_vertical": "Mass Tort / Class Action / Product Injury",
+      "practice_area_name": "Mass Tort (General)",
+      "display_name": "Mass Tort",
+      "normalized_id": "mass_tort",
+      "synonyms": [
+        "class action lawyer",
+        "MDL attorney",
+        "multi-district litigation lawyer"
+      ],
+      "base_keyword_roots": [
+        "mass tort lawyer",
+        "mass tort attorney",
+        "class action lawyer",
+        "class action attorney"
+      ],
+      "local_keyword_patterns": [
+        "mass tort lawyer {location}",
+        "{location} mass tort lawyer"
+      ],
+      "national_keyword_patterns": [
+        "mass tort lawyer",
+        "mass tort attorney",
+        "class action lawyer"
+      ],
+      "examples_found_in_money_terms": [
+        "boston mass tort lawyer",
+        "aviation port services class action",
+        "california class action lawyers",
+        "albuquerque mass tort lawyer",
+        "albuquerque mass tort attorney",
+        "denver mass tort attorney"
+      ],
+      "notes": "",
+      "needs_manual_review": false
+    },
+    {
+      "parent_vertical": "Mass Tort / Class Action / Product Injury",
+      "practice_area_name": "Camp Lejeune",
+      "display_name": "Camp Lejeune",
+      "normalized_id": "camp_lejeune",
+      "synonyms": [
+        "Camp Lejeune water contamination lawyer"
+      ],
+      "base_keyword_roots": [
+        "camp lejeune lawyer",
+        "camp lejeune lawsuit attorney"
+      ],
+      "local_keyword_patterns": [
+        "camp lejeune lawyer {location}",
+        "{location} camp lejeune lawyer"
+      ],
+      "national_keyword_patterns": [
+        "camp lejeune lawyer",
+        "camp lejeune lawsuit attorney"
+      ],
+      "examples_found_in_money_terms": [
+        "camp lejeune lawsuit"
+      ],
+      "notes": "",
+      "needs_manual_review": false
+    },
+    {
+      "parent_vertical": "Mass Tort / Class Action / Product Injury",
+      "practice_area_name": "Talcum Powder / Baby Powder",
+      "display_name": "Talcum Powder",
+      "normalized_id": "talcum_powder",
+      "synonyms": [
+        "baby powder cancer lawyer",
+        "Johnson & Johnson talc attorney"
+      ],
+      "base_keyword_roots": [
+        "talcum powder lawyer",
+        "talcum powder attorney"
+      ],
+      "local_keyword_patterns": [
+        "talcum powder lawyer {location}"
+      ],
+      "national_keyword_patterns": [
+        "talcum powder lawyer",
+        "talcum powder attorney"
+      ],
+      "examples_found_in_money_terms": [
+        "chicago talcum powder lawyer"
+      ],
+      "notes": "",
+      "needs_manual_review": false
+    },
+    {
+      "parent_vertical": "Mass Tort / Class Action / Product Injury",
+      "practice_area_name": "Zantac",
+      "display_name": "Zantac Lawsuit",
+      "normalized_id": "zantac",
+      "synonyms": [
+        "ranitidine cancer lawyer"
+      ],
+      "base_keyword_roots": [
+        "zantac lawyer",
+        "zantac cancer lawsuit attorney"
+      ],
+      "local_keyword_patterns": [
+        "zantac lawyer {location}"
+      ],
+      "national_keyword_patterns": [
+        "zantac lawyer",
+        "zantac cancer lawsuit attorney"
+      ],
+      "examples_found_in_money_terms": [
+        "chicago zantac cancer lawsuit attorney",
+        "zantac lawyer"
+      ],
+      "notes": "",
+      "needs_manual_review": false
+    },
+    {
+      "parent_vertical": "Mass Tort / Class Action / Product Injury",
+      "practice_area_name": "Defective Drugs & Medical Devices",
+      "display_name": "Defective Drugs & Medical Devices",
+      "normalized_id": "defective_drugs_devices",
+      "synonyms": [
+        "dangerous drug lawyer",
+        "defective device attorney",
+        "recalled drug lawyer"
+      ],
+      "base_keyword_roots": [
+        "defective drug lawyer",
+        "dangerous drug lawyer",
+        "defective medical device lawyer",
+        "medical device lawyer"
+      ],
+      "local_keyword_patterns": [
+        "defective drug lawyer {location}",
+        "{location} defective drug lawyer",
+        "dangerous drug lawyer {location}",
+        "{location} dangerous drug lawyer"
+      ],
+      "national_keyword_patterns": [
+        "defective drug lawyer",
+        "dangerous drug lawyer",
+        "defective medical device lawyer"
+      ],
+      "examples_found_in_money_terms": [
+        "medical devices cincinnati lawyer",
+        "medical devices columbus lawyer",
+        "defective medical device lawyer boca raton",
+        "houston defective drug lawyer",
+        "dallas dangerous drug lawyer",
+        "fort worth dangerous drug lawyer"
+      ],
+      "notes": "",
+      "needs_manual_review": false
+    },
+    {
+      "parent_vertical": "Mass Tort / Class Action / Product Injury",
+      "practice_area_name": "IUL / Financial Fraud (Indexed Universal Life)",
+      "display_name": "IUL & Investment Fraud",
+      "normalized_id": "iul_financial_fraud",
+      "synonyms": [
+        "indexed universal life lawyer",
+        "investment fraud attorney",
+        "IUL lawsuit lawyer"
+      ],
+      "base_keyword_roots": [
+        "iul lawyer",
+        "iul attorney",
+        "indexed universal life lawyer",
+        "investment fraud lawyer",
+        "broker misconduct lawyer",
+        "ponzi scheme lawyer",
+        "retirement fraud lawyer"
+      ],
+      "local_keyword_patterns": [
+        "iul attorney {location}",
+        "{location} iul attorney",
+        "investment fraud lawyer {location}",
+        "{location} investment fraud lawyer"
+      ],
+      "national_keyword_patterns": [
+        "iul lawyer",
+        "iul attorney",
+        "indexed universal life lawyer",
+        "investment fraud lawyer",
+        "broker misconduct lawyer",
+        "ponzi scheme lawyer",
+        "national iul attorney",
+        "national iul lawyer"
+      ],
+      "examples_found_in_money_terms": [
+        "iul attorney",
+        "iul lawyer",
+        "indexed universal life law firm",
+        "indexed universal life lawyer",
+        "indexed universal life attorney",
+        "iul law firm"
+      ],
+      "notes": "Found in RP Legal Investors Site data. National practice. Includes many carrier-specific IUL terms.",
+      "needs_manual_review": false
+    },
+    {
+      "parent_vertical": "Personal Injury",
+      "practice_area_name": "JUUL / Vaping",
+      "display_name": "JUUL & Vaping Injury",
+      "normalized_id": "juul_vaping",
+      "synonyms": [
+        "e-cigarette injury lawyer",
+        "vaping lung injury attorney"
+      ],
+      "base_keyword_roots": [
+        "juul lawyer",
+        "vaping injury lawyer"
+      ],
+      "local_keyword_patterns": [
+        "juul lawyer {location}"
+      ],
+      "national_keyword_patterns": [
+        "juul lawyer",
+        "vaping injury lawyer"
+      ],
+      "examples_found_in_money_terms": [
+        "juul lawyer"
+      ],
+      "notes": "Product liability claim — vaping device defect and/or dangerous addictive product. Plaintiffs seek damages for lung injury, nicotine addiction, and related harm. Found in Malman Law (Chicago). Monitor litigation status as it evolves.",
+      "needs_manual_review": false
+    },
+    {
+      "parent_vertical": "Personal Injury",
+      "practice_area_name": "Opioid Litigation",
+      "display_name": "Opioid Litigation",
+      "normalized_id": "opioid_litigation",
+      "synonyms": [
+        "opioid addiction lawsuit lawyer"
+      ],
+      "base_keyword_roots": [
+        "opioid lawyer",
+        "opioid litigation attorney"
+      ],
+      "local_keyword_patterns": [
+        "opioid lawyer {location}"
+      ],
+      "national_keyword_patterns": [
+        "opioid lawyer"
+      ],
+      "examples_found_in_money_terms": [
+        "boston opioid lawyer"
+      ],
+      "notes": "Personal injury claims against opioid manufacturers and distributors for addiction, injury, and wrongful death. Found in Sweeney Merrigan data.",
+      "needs_manual_review": false
+    },
+    {
+      "parent_vertical": "Professional License Defense",
+      "practice_area_name": "Medical License Defense",
+      "display_name": "Medical License Defense",
+      "normalized_id": "medical_license_defense",
+      "synonyms": [
+        "physician license attorney",
+        "doctor license defense lawyer"
+      ],
+      "base_keyword_roots": [
+        "medical license defense lawyer",
+        "medical license defense attorney"
+      ],
+      "local_keyword_patterns": [
+        "medical license defense lawyer {location}",
+        "{location} medical license defense lawyer"
+      ],
+      "national_keyword_patterns": [
+        "medical license defense lawyer",
+        "medical license defense attorney"
+      ],
+      "examples_found_in_money_terms": [
+        "arizona medical license defense lawyer",
+        "phoenix medical license defense lawyer",
+        "kingman medical license defense lawyer",
+        "payson medical license defense attorney",
+        "texas medical board lawyer",
+        "texas medical board licence defense lawyer"
+      ],
+      "notes": "",
+      "needs_manual_review": false
+    },
+    {
+      "parent_vertical": "Professional License Defense",
+      "practice_area_name": "Nursing License Defense",
+      "display_name": "Nursing License Defense",
+      "normalized_id": "nursing_license_defense",
+      "synonyms": [
+        "RN license defense lawyer",
+        "nurse license attorney"
+      ],
+      "base_keyword_roots": [
+        "nursing license defense lawyer",
+        "nursing license defense attorney"
+      ],
+      "local_keyword_patterns": [
+        "nursing license defense lawyer {location}"
+      ],
+      "national_keyword_patterns": [
+        "nursing license defense lawyer",
+        "nursing license defense attorney"
+      ],
+      "examples_found_in_money_terms": [
+        "arizona nursing license defense lawyer",
+        "texas nursing license defense attorney"
+      ],
+      "notes": "",
+      "needs_manual_review": false
+    },
+    {
+      "parent_vertical": "Professional License Defense",
+      "practice_area_name": "Dental License Defense",
+      "display_name": "Dental License Defense",
+      "normalized_id": "dental_license_defense",
+      "synonyms": [
+        "dentist license attorney"
+      ],
+      "base_keyword_roots": [
+        "dental license defense lawyer",
+        "dental license defense attorney"
+      ],
+      "local_keyword_patterns": [
+        "dental license defense lawyer {location}"
+      ],
+      "national_keyword_patterns": [
+        "dental license defense lawyer",
+        "dental license defense attorney"
+      ],
+      "examples_found_in_money_terms": [
+        "arizona dental license defense lawyer",
+        "dental license defense attorney"
+      ],
+      "notes": "",
+      "needs_manual_review": false
+    },
+    {
+      "parent_vertical": "Professional License Defense",
+      "practice_area_name": "Pharmacist License Defense",
+      "display_name": "Pharmacist License Defense",
+      "normalized_id": "pharmacist_license_defense",
+      "synonyms": [],
+      "base_keyword_roots": [
+        "pharmacist license defense lawyer",
+        "pharmacist license defense attorney"
+      ],
+      "local_keyword_patterns": [
+        "pharmacist license defense lawyer {location}"
+      ],
+      "national_keyword_patterns": [
+        "pharmacist license defense lawyer"
+      ],
+      "examples_found_in_money_terms": [
+        "arizona pharmacist license defense lawyer"
+      ],
+      "notes": "",
+      "needs_manual_review": false
+    },
+    {
+      "parent_vertical": "Professional License Defense",
+      "practice_area_name": "Chiropractor License Defense",
+      "display_name": "Chiropractor License Defense",
+      "normalized_id": "chiropractor_license_defense",
+      "synonyms": [],
+      "base_keyword_roots": [
+        "chiropractor license defense lawyer",
+        "chiropractor license defense attorney"
+      ],
+      "local_keyword_patterns": [
+        "chiropractor license defense lawyer {location}"
+      ],
+      "national_keyword_patterns": [
+        "chiropractor license defense lawyer"
+      ],
+      "examples_found_in_money_terms": [
+        "arizona chiropractor license defense lawyer"
+      ],
+      "notes": "",
+      "needs_manual_review": false
+    },
+    {
+      "parent_vertical": "Professional License Defense",
+      "practice_area_name": "Physical Therapist License Defense",
+      "display_name": "Physical Therapist License Defense",
+      "normalized_id": "pt_license_defense",
+      "synonyms": [
+        "PT license attorney"
+      ],
+      "base_keyword_roots": [
+        "physical therapist license defense lawyer"
+      ],
+      "local_keyword_patterns": [
+        "physical therapist license defense lawyer {location}"
+      ],
+      "national_keyword_patterns": [
+        "physical therapist license defense lawyer"
+      ],
+      "examples_found_in_money_terms": [
+        "arizona physical therapist license defense lawyer"
+      ],
+      "notes": "",
+      "needs_manual_review": false
+    },
+    {
+      "parent_vertical": "Professional License Defense",
+      "practice_area_name": "Physician Assistant License Defense",
+      "display_name": "Physician Assistant License Defense",
+      "normalized_id": "pa_license_defense",
+      "synonyms": [
+        "PA license attorney"
+      ],
+      "base_keyword_roots": [
+        "physician assistant license defense lawyer"
+      ],
+      "local_keyword_patterns": [
+        "physician assistant license defense lawyer {location}"
+      ],
+      "national_keyword_patterns": [
+        "physician assistant license defense lawyer"
+      ],
+      "examples_found_in_money_terms": [
+        "arizona physician assistant license defense lawyer",
+        "scottsdale physician assistant license defense lawyer",
+        "tempe physician assistant license defense lawyer"
+      ],
+      "notes": "",
+      "needs_manual_review": false
+    },
+    {
+      "parent_vertical": "Professional License Defense",
+      "practice_area_name": "Respiratory Care License Defense",
+      "display_name": "Respiratory Care License Defense",
+      "normalized_id": "respiratory_care_license_defense",
+      "synonyms": [
+        "respiratory therapist license attorney"
+      ],
+      "base_keyword_roots": [
+        "respiratory care license defense lawyer"
+      ],
+      "local_keyword_patterns": [
+        "respiratory care license defense lawyer {location}"
+      ],
+      "national_keyword_patterns": [
+        "respiratory care license defense lawyer"
+      ],
+      "examples_found_in_money_terms": [
+        "arizona respiratory care license defense lawyer"
+      ],
+      "notes": "",
+      "needs_manual_review": false
+    },
+    {
+      "parent_vertical": "Professional License Defense",
+      "practice_area_name": "Professional License Defense (General)",
+      "display_name": "Professional License Defense",
+      "normalized_id": "professional_license_defense_general",
+      "synonyms": [
+        "occupational license attorney",
+        "healthcare license defense lawyer"
+      ],
+      "base_keyword_roots": [
+        "professional license defense lawyer",
+        "professional licensing defense lawyer"
+      ],
+      "local_keyword_patterns": [
+        "professional license defense lawyer {location}"
+      ],
+      "national_keyword_patterns": [
+        "professional license defense lawyer",
+        "professional licensing defense lawyer"
+      ],
+      "examples_found_in_money_terms": [
+        "professional licensing defense lawyer"
+      ],
+      "notes": "",
+      "needs_manual_review": false
+    },
+    {
+      "parent_vertical": "Employment Law",
+      "practice_area_name": "Civil Rights & Police Misconduct",
+      "display_name": "Civil Rights & Police Misconduct",
+      "normalized_id": "civil_rights_police_misconduct",
+      "synonyms": [
+        "police brutality lawyer",
+        "wrongful conviction attorney"
+      ],
+      "base_keyword_roots": [
+        "civil rights lawyer",
+        "civil rights attorney",
+        "police brutality lawyer",
+        "police misconduct attorney",
+        "wrongful conviction attorney"
+      ],
+      "local_keyword_patterns": [
+        "civil rights lawyer {location}",
+        "{location} civil rights lawyer",
+        "police brutality lawyer {location}",
+        "{location} police brutality lawyer"
+      ],
+      "national_keyword_patterns": [
+        "civil rights lawyer",
+        "police brutality lawyer",
+        "police misconduct attorney"
+      ],
+      "examples_found_in_money_terms": [
+        "boston police brutality lawyer",
+        "civil rights lawyer california",
+        "police brutality lawyers california",
+        "wrongful conviction attorney california",
+        "police misconduct attorney fresno",
+        "wrongful conviction attorney fresno"
+      ],
+      "notes": "Found in Pointer & Buelna, LLP data. Classified under Employment Law / Civil Rights.",
+      "needs_manual_review": false
+    },
+    {
+      "parent_vertical": "Personal Injury",
+      "practice_area_name": "Firefighter Injury (Minnesota)",
+      "display_name": "Firefighter Injury",
+      "normalized_id": "firefighter_injury",
+      "synonyms": [
+        "first responder injury lawyer",
+        "firefighter workers comp lawyer"
+      ],
+      "base_keyword_roots": [
+        "minnesota firefighter lawyer",
+        "firefighter injury lawyer"
+      ],
+      "local_keyword_patterns": [
+        "firefighter lawyer {location}",
+        "{location} firefighter lawyer"
+      ],
+      "national_keyword_patterns": [
+        "firefighter injury lawyer"
+      ],
+      "examples_found_in_money_terms": [
+        "minnesota firefighter lawyer"
+      ],
+      "notes": "Firefighter injured on duty — treated as personal injury claim, often involving occupational cancer presumption laws, equipment failure, or building collapse. Found in Schmidt & Salita (Minneapolis) data.",
+      "needs_manual_review": false
+    },
+    {
+      "parent_vertical": "Criminal Defense",
+      "practice_area_name": "Criminal Appeals",
+      "display_name": "Criminal Appeals",
+      "normalized_id": "criminal_appeals",
+      "synonyms": [
+        "appellate lawyer",
+        "appeal attorney"
+      ],
+      "base_keyword_roots": [
+        "appeals lawyer",
+        "appeals attorney"
+      ],
+      "local_keyword_patterns": [
+        "appeals lawyer {location}",
+        "{location} appeals lawyer"
+      ],
+      "national_keyword_patterns": [
+        "appeals lawyer",
+        "appeals attorney"
+      ],
+      "examples_found_in_money_terms": [
+        "appeals lawyer anaheim",
+        "appeals lawyer irvine",
+        "appeals lawyer riverside",
+        "appeals lawyer tustin",
+        "maryland family appeals lawyer"
+      ],
+      "notes": "Appellate criminal work. Found in Scott Henry (Orange County) data.",
+      "needs_manual_review": false
+    },
+    {
+      "parent_vertical": "Criminal Defense",
+      "practice_area_name": "Criminal Procedure (Pre-Filing, Arraignment, Probation)",
+      "display_name": "Criminal Procedure",
+      "normalized_id": "criminal_procedure",
+      "synonyms": [
+        "arraignment lawyer",
+        "pre-filing investigation attorney"
+      ],
+      "base_keyword_roots": [
+        "arraignment lawyer",
+        "arrest lawyer",
+        "arrest warrant lawyer",
+        "arson lawyer",
+        "failure to appear lawyer",
+        "traffic lawyer",
+        "pre filing investigation lawyer",
+        "three strikes lawyer",
+        "collaborative court lawyer",
+        "mental health diversion lawyer"
+      ],
+      "local_keyword_patterns": [
+        "arraignment lawyer {location}",
+        "{location} arraignment lawyer",
+        "pre filing investigation lawyer {location}"
+      ],
+      "national_keyword_patterns": [
+        "arraignment lawyer",
+        "arrest lawyer",
+        "pre filing investigation lawyer",
+        "traffic lawyer"
+      ],
+      "examples_found_in_money_terms": [
+        "failure to appear lawyer anaheim",
+        "traffic lawyer anaheim",
+        "failure to appear lawyer irvine",
+        "traffic lawyer irvine",
+        "arraignment lawyer orange county",
+        "arrest lawyer orange county"
+      ],
+      "notes": "Miscellaneous criminal procedure terms from Scott Henry (Orange County) client data.",
+      "needs_manual_review": false
+    },
+    {
+      "parent_vertical": "Criminal Defense",
+      "practice_area_name": "Student Defense",
+      "display_name": "Student Defense",
+      "normalized_id": "student_defense",
+      "synonyms": [
+        "college disciplinary lawyer",
+        "student misconduct attorney"
+      ],
+      "base_keyword_roots": [
+        "student defense lawyer",
+        "student defense attorney"
+      ],
+      "local_keyword_patterns": [
+        "student defense lawyer {location}"
+      ],
+      "national_keyword_patterns": [
+        "student defense lawyer"
+      ],
+      "examples_found_in_money_terms": [
+        "student defense lawyer anaheim",
+        "student defense lawyer riverside",
+        "student defense lawyer tustin"
+      ],
+      "notes": "Found in Scott Henry (Orange County) criminal data.",
+      "needs_manual_review": false
+    },
+    {
+      "parent_vertical": "Personal Injury",
+      "practice_area_name": "Liquor Liability",
+      "display_name": "Liquor Liability (Dram Shop)",
+      "normalized_id": "liquor_liability",
+      "synonyms": [
+        "dram shop lawyer",
+        "alcohol liability attorney",
+        "DUI victim liquor liability lawyer"
+      ],
+      "base_keyword_roots": [
+        "liquor liability lawyer",
+        "liquor liability attorney",
+        "dram shop lawyer",
+        "dram shop attorney"
+      ],
+      "local_keyword_patterns": [
+        "liquor liability lawyer {location}",
+        "{location} liquor liability lawyer",
+        "dram shop lawyer {location}",
+        "{location} dram shop lawyer"
+      ],
+      "national_keyword_patterns": [
+        "liquor liability lawyer",
+        "dram shop lawyer"
+      ],
+      "examples_found_in_money_terms": [
+        "prescott liquor liability lawyer"
+      ],
+      "notes": "Represents victims of drunk driving accidents where a bar/restaurant over-served the driver. Civil plaintiff claim — not criminal. Found in Jensen Phelan (Prescott) data.",
+      "needs_manual_review": false
+    },
+    {
+      "parent_vertical": "Personal Injury",
+      "practice_area_name": "Oil & Gas Royalties / Energy Law",
+      "display_name": "Oil & Gas Royalties & Energy Law",
+      "normalized_id": "oil_gas_energy_law",
+      "synonyms": [
+        "mineral rights lawyer",
+        "oil royalties attorney",
+        "energy law attorney",
+        "upstream oil lawyer"
+      ],
+      "base_keyword_roots": [
+        "oil and gas royalties lawyer",
+        "oil and gas lawyer",
+        "mineral rights lawyer",
+        "energy law attorney"
+      ],
+      "local_keyword_patterns": [
+        "oil and gas lawyer {location}",
+        "{location} oil and gas lawyer",
+        "oil and gas royalties lawyer {location}",
+        "mineral rights lawyer {location}"
+      ],
+      "national_keyword_patterns": [
+        "oil and gas royalties lawyer",
+        "oil and gas lawyer",
+        "mineral rights lawyer",
+        "energy law attorney"
+      ],
+      "examples_found_in_money_terms": [
+        "sugar land oil and gas royalties lawyer",
+        "victoria oil and gas lawyer",
+        "richmond oil and gas lawyer",
+        "missouri city oil and gas lawyer"
+      ],
+      "notes": "Transactional/regulatory energy law — distinct from oilfield injury PI claims. Found in Reed & Terry (Sugar Land, TX / Victoria, TX) and Anderson Cummings data.",
+      "needs_manual_review": false
+    },
+    {
+      "parent_vertical": "Personal Injury",
+      "practice_area_name": "Property & Environmental Damage",
+      "display_name": "Property & Environmental Damage",
+      "normalized_id": "property_environmental_damage",
+      "synonyms": [
+        "environmental injury lawyer",
+        "property damage attorney"
+      ],
+      "base_keyword_roots": [
+        "property and environmental damage lawyer"
+      ],
+      "local_keyword_patterns": [
+        "property and environmental damage lawyer {location}"
+      ],
+      "national_keyword_patterns": [
+        "property and environmental damage lawyer"
+      ],
+      "examples_found_in_money_terms": [
+        "katy property and environmental damage lawyer"
+      ],
+      "notes": "Property and environmental damage claims with personal injury overlap. Found in Reed & Terry (Katy, TX) data.",
+      "needs_manual_review": false
+    },
+    {
+      "parent_vertical": "Personal Injury",
+      "practice_area_name": "Delivery Vehicle Accidents",
+      "display_name": "Delivery Vehicle Accidents",
+      "normalized_id": "delivery_accidents",
+      "synonyms": [
+        "Amazon delivery accident lawyer",
+        "FedEx accident attorney"
+      ],
+      "base_keyword_roots": [
+        "delivery accident lawyer",
+        "delivery vehicle accident lawyer"
+      ],
+      "local_keyword_patterns": [
+        "delivery accident lawyer {location}",
+        "{location} delivery accident lawyer"
+      ],
+      "national_keyword_patterns": [
+        "delivery accident lawyer"
+      ],
+      "examples_found_in_money_terms": [
+        "katy delivery accident lawyer"
+      ],
+      "notes": "Found in Reed & Terry (Katy, TX). Increasingly relevant with gig economy growth.",
+      "needs_manual_review": false
+    },
+    {
+      "parent_vertical": "Personal Injury",
+      "practice_area_name": "Bone Fracture Injuries",
+      "display_name": "Bone Fracture Injuries",
+      "normalized_id": "bone_fractures",
+      "synonyms": [
+        "broken bone lawyer",
+        "fracture injury attorney"
+      ],
+      "base_keyword_roots": [
+        "bone fracture lawyer",
+        "broken bone lawyer"
+      ],
+      "local_keyword_patterns": [
+        "bone fracture lawyer {location}"
+      ],
+      "national_keyword_patterns": [
+        "bone fracture lawyer",
+        "broken bone lawyer"
+      ],
+      "examples_found_in_money_terms": [
+        "san francisco bone fracture lawyer"
+      ],
+      "notes": "Found in Cartwright Law Firm (San Francisco).",
+      "needs_manual_review": false
+    },
+    {
+      "parent_vertical": "Lesiones Personales",
+      "practice_area_name": "Lesiones personales",
+      "display_name": "Lesiones personales",
+      "normalized_id": "lp_lesiones_personales",
+      "synonyms": [
+        "abogado de lesiones personales",
+        "abogados de lesiones personales",
+        "lesiones personales",
+        "abogado de lesiones",
+        "daños personales"
+      ],
+      "base_keyword_roots": [
+        "abogado de lesiones personales",
+        "abogados de lesiones personales"
+      ],
+      "local_keyword_patterns": [
+        "abogado de lesiones personales en {location}",
+        "{location} abogado de lesiones personales",
+        "abogados de lesiones personales en {location}",
+        "{location} abogados de lesiones personales"
+      ],
+      "national_keyword_patterns": [
+        "abogado de lesiones personales",
+        "abogados de lesiones personales"
+      ],
+      "examples_found_in_money_terms": [
+        "abogado de lesiones personales en dallas"
+      ],
+      "notes": "Spanish personal injury — general. Source: Kherkher Garcia (Call Jesus campaign).",
+      "needs_manual_review": false
+    },
+    {
+      "parent_vertical": "Lesiones Personales",
+      "practice_area_name": "Accidente de auto",
+      "display_name": "Accidente de auto",
+      "normalized_id": "lp_accidente_auto",
+      "synonyms": [
+        "abogado de accidente de auto",
+        "abogados de accidente de auto",
+        "abogado de accidente de carro",
+        "abogados de accidente de carro",
+        "accidente de auto",
+        "accidente de carro",
+        "auto",
+        "carro"
+      ],
+      "base_keyword_roots": [
+        "abogado de accidente de auto",
+        "abogados de accidente de auto",
+        "abogado de accidente de carro",
+        "abogados de accidente de carro"
+      ],
+      "local_keyword_patterns": [
+        "abogado de accidente de auto en {location}",
+        "{location} abogado de accidente de auto",
+        "abogados de accidente de auto en {location}",
+        "{location} abogados de accidente de auto",
+        "abogado de accidente de carro en {location}",
+        "{location} abogado de accidente de carro",
+        "abogados de accidente de carro en {location}",
+        "{location} abogados de accidente de carro"
+      ],
+      "national_keyword_patterns": [
+        "abogado de accidente de auto",
+        "abogados de accidente de auto",
+        "abogado de accidente de carro",
+        "abogados de accidente de carro"
+      ],
+      "examples_found_in_money_terms": [
+        "abogado de accidente de auto en dallas",
+        "dallas abogado de accidente de carro"
+      ],
+      "notes": "Spanish auto accident. Covers both 'auto' and 'carro' variants.",
+      "needs_manual_review": false
+    },
+    {
+      "parent_vertical": "Lesiones Personales",
+      "practice_area_name": "Accidente de camión",
+      "display_name": "Accidente de camión",
+      "normalized_id": "lp_accidente_camion",
+      "synonyms": [
+        "abogado de accidente de camión",
+        "abogados de accidente de camión",
+        "accidente de camión",
+        "camión",
+        "camion"
+      ],
+      "base_keyword_roots": [
+        "abogado de accidente de camión",
+        "abogados de accidente de camión"
+      ],
+      "local_keyword_patterns": [
+        "abogado de accidente de camión en {location}",
+        "{location} abogado de accidente de camión",
+        "abogados de accidente de camión en {location}",
+        "{location} abogados de accidente de camión"
+      ],
+      "national_keyword_patterns": [
+        "abogado de accidente de camión",
+        "abogados de accidente de camión"
+      ],
+      "examples_found_in_money_terms": [
+        "dallas abogado de accidente de camion"
+      ],
+      "notes": "Spanish truck accident. Uses accent on camión as specified.",
+      "needs_manual_review": false
+    },
+    {
+      "parent_vertical": "Lesiones Personales",
+      "practice_area_name": "Accidente de motocicleta",
+      "display_name": "Accidente de motocicleta",
+      "normalized_id": "lp_accidente_motocicleta",
+      "synonyms": [
+        "abogado de accidente de motocicleta",
+        "abogados de accidente de motocicleta",
+        "accidente de motocicleta",
+        "motocicleta"
+      ],
+      "base_keyword_roots": [
+        "abogado de accidente de motocicleta",
+        "abogados de accidente de motocicleta"
+      ],
+      "local_keyword_patterns": [
+        "abogado de accidente de motocicleta en {location}",
+        "{location} abogado de accidente de motocicleta",
+        "abogados de accidente de motocicleta en {location}",
+        "{location} abogados de accidente de motocicleta"
+      ],
+      "national_keyword_patterns": [
+        "abogado de accidente de motocicleta",
+        "abogados de accidente de motocicleta"
+      ],
+      "examples_found_in_money_terms": [
+        "abogado de accidente de motocicleta en dallas"
+      ],
+      "notes": "Spanish motorcycle accident.",
+      "needs_manual_review": false
+    },
+    {
+      "parent_vertical": "Lesiones Personales",
+      "practice_area_name": "Accidentes de trabajo",
+      "display_name": "Accidentes de trabajo",
+      "normalized_id": "lp_accidentes_trabajo",
+      "synonyms": [
+        "abogado de accidentes de trabajo",
+        "abogados de accidentes de trabajo",
+        "accidentes de trabajo",
+        "trabajo",
+        "accidente laboral"
+      ],
+      "base_keyword_roots": [
+        "abogado de accidentes de trabajo",
+        "abogados de accidentes de trabajo"
+      ],
+      "local_keyword_patterns": [
+        "abogado de accidentes de trabajo en {location}",
+        "{location} abogado de accidentes de trabajo",
+        "abogados de accidentes de trabajo en {location}",
+        "{location} abogados de accidentes de trabajo"
+      ],
+      "national_keyword_patterns": [
+        "abogado de accidentes de trabajo",
+        "abogados de accidentes de trabajo"
+      ],
+      "examples_found_in_money_terms": [
+        "abogados de accidentes de trabajo en dallas tx"
+      ],
+      "notes": "Spanish workplace / work accident.",
+      "needs_manual_review": false
+    },
+    {
+      "parent_vertical": "Lesiones Personales",
+      "practice_area_name": "Accidentes de construcción",
+      "display_name": "Accidentes de construcción",
+      "normalized_id": "lp_accidentes_construccion",
+      "synonyms": [
+        "abogado de accidentes de construcción",
+        "abogados de accidentes de construcción",
+        "accidentes de construcción",
+        "construcción",
+        "construccion"
+      ],
+      "base_keyword_roots": [
+        "abogado de accidentes de construcción",
+        "abogados de accidentes de construcción"
+      ],
+      "local_keyword_patterns": [
+        "abogado de accidentes de construcción en {location}",
+        "{location} abogado de accidentes de construcción",
+        "abogados de accidentes de construcción en {location}",
+        "{location} abogados de accidentes de construcción"
+      ],
+      "national_keyword_patterns": [
+        "abogado de accidentes de construcción",
+        "abogados de accidentes de construcción"
+      ],
+      "examples_found_in_money_terms": [
+        "abogado de accidentes de construcción de dallas"
+      ],
+      "notes": "Spanish construction accident.",
+      "needs_manual_review": false
+    },
+    {
+      "parent_vertical": "Lesiones Personales",
+      "practice_area_name": "Muerte por negligencia",
+      "display_name": "Muerte por negligencia",
+      "normalized_id": "lp_muerte_negligencia",
+      "synonyms": [
+        "abogado de muerte por negligencia",
+        "abogados de muerte por negligencia",
+        "muerte por negligencia",
+        "negligencia",
+        "muerte injusta"
+      ],
+      "base_keyword_roots": [
+        "abogado de muerte por negligencia",
+        "abogados de muerte por negligencia"
+      ],
+      "local_keyword_patterns": [
+        "abogado de muerte por negligencia en {location}",
+        "{location} abogado de muerte por negligencia",
+        "abogados de muerte por negligencia en {location}",
+        "{location} abogados de muerte por negligencia"
+      ],
+      "national_keyword_patterns": [
+        "abogado de muerte por negligencia",
+        "abogados de muerte por negligencia"
+      ],
+      "examples_found_in_money_terms": [
+        "abogado de muerte por negligencia en dallas"
+      ],
+      "notes": "Spanish wrongful death.",
+      "needs_manual_review": false
+    },
+    {
+      "parent_vertical": "Lesiones Personales",
+      "practice_area_name": "Lesión cerebral",
+      "display_name": "Lesión cerebral",
+      "normalized_id": "lp_lesion_cerebral",
+      "synonyms": [
+        "abogado de lesión cerebral",
+        "abogados de lesión cerebral",
+        "abogado de lesiones cerebrales",
+        "abogados de lesiones cerebrales",
+        "lesión cerebral",
+        "lesiones cerebrales",
+        "cerebral"
+      ],
+      "base_keyword_roots": [
+        "abogado de lesión cerebral",
+        "abogados de lesión cerebral",
+        "abogado de lesiones cerebrales",
+        "abogados de lesiones cerebrales"
+      ],
+      "local_keyword_patterns": [
+        "abogado de lesión cerebral en {location}",
+        "{location} abogado de lesión cerebral",
+        "abogados de lesión cerebral en {location}",
+        "{location} abogados de lesión cerebral",
+        "abogado de lesiones cerebrales en {location}",
+        "{location} abogado de lesiones cerebrales",
+        "abogados de lesiones cerebrales en {location}",
+        "{location} abogados de lesiones cerebrales"
+      ],
+      "national_keyword_patterns": [
+        "abogado de lesión cerebral",
+        "abogados de lesión cerebral",
+        "abogado de lesiones cerebrales",
+        "abogados de lesiones cerebrales"
+      ],
+      "examples_found_in_money_terms": [
+        "abogado de lesion cerebral en dallas"
+      ],
+      "notes": "Spanish brain injury. Covers both singular 'lesión cerebral' and plural 'lesiones cerebrales'.",
+      "needs_manual_review": false
+    },
+    {
+      "parent_vertical": "Lesiones Personales",
+      "practice_area_name": "Lesiones por quemaduras",
+      "display_name": "Lesiones por quemaduras",
+      "normalized_id": "lp_quemaduras",
+      "synonyms": [
+        "abogado de lesiones por quemaduras",
+        "abogados de lesiones por quemaduras",
+        "lesiones por quemaduras",
+        "quemaduras"
+      ],
+      "base_keyword_roots": [
+        "abogado de lesiones por quemaduras",
+        "abogados de lesiones por quemaduras"
+      ],
+      "local_keyword_patterns": [
+        "abogado de lesiones por quemaduras en {location}",
+        "{location} abogado de lesiones por quemaduras",
+        "abogados de lesiones por quemaduras en {location}",
+        "{location} abogados de lesiones por quemaduras"
+      ],
+      "national_keyword_patterns": [
+        "abogado de lesiones por quemaduras",
+        "abogados de lesiones por quemaduras"
+      ],
+      "examples_found_in_money_terms": [
+        "abogado de lesiones por quemaduras de dallas"
+      ],
+      "notes": "Spanish burn injury.",
+      "needs_manual_review": false
+    },
+    {
+      "parent_vertical": "Lesiones Personales",
+      "practice_area_name": "Mordedura de perro",
+      "display_name": "Mordedura de perro",
+      "normalized_id": "lp_mordedura_perro",
+      "synonyms": [
+        "abogado de mordedura de perro",
+        "abogados de mordedura de perro",
+        "abogado de mordeduras de perro",
+        "abogados de mordeduras de perro",
+        "mordedura de perro",
+        "mordeduras de perro",
+        "perro"
+      ],
+      "base_keyword_roots": [
+        "abogado de mordedura de perro",
+        "abogados de mordedura de perro",
+        "abogado de mordeduras de perro",
+        "abogados de mordeduras de perro"
+      ],
+      "local_keyword_patterns": [
+        "abogado de mordedura de perro en {location}",
+        "{location} abogado de mordedura de perro",
+        "abogados de mordedura de perro en {location}",
+        "{location} abogados de mordedura de perro",
+        "abogado de mordeduras de perro en {location}",
+        "{location} abogado de mordeduras de perro",
+        "abogados de mordeduras de perro en {location}",
+        "{location} abogados de mordeduras de perro"
+      ],
+      "national_keyword_patterns": [
+        "abogado de mordedura de perro",
+        "abogados de mordedura de perro",
+        "abogado de mordeduras de perro",
+        "abogados de mordeduras de perro"
+      ],
+      "examples_found_in_money_terms": [
+        "abogado de mordedura de perro en dallas"
+      ],
+      "notes": "Spanish dog bite. Covers both singular and plural mordedura/mordeduras.",
+      "needs_manual_review": false
+    },
+    {
+      "parent_vertical": "Lesiones Personales",
+      "practice_area_name": "Accidentes de peatones",
+      "display_name": "Accidentes de peatones",
+      "normalized_id": "lp_peatones",
+      "synonyms": [
+        "abogado de accidentes de peatones",
+        "abogados de accidentes de peatones",
+        "accidentes de peatones",
+        "peatones",
+        "atropellamiento"
+      ],
+      "base_keyword_roots": [
+        "abogado de accidentes de peatones",
+        "abogados de accidentes de peatones"
+      ],
+      "local_keyword_patterns": [
+        "abogado de accidentes de peatones en {location}",
+        "{location} abogado de accidentes de peatones",
+        "abogados de accidentes de peatones en {location}",
+        "{location} abogados de accidentes de peatones"
+      ],
+      "national_keyword_patterns": [
+        "abogado de accidentes de peatones",
+        "abogados de accidentes de peatones"
+      ],
+      "examples_found_in_money_terms": [
+        "abogado de accidentes de peatones en dallas"
+      ],
+      "notes": "Spanish pedestrian accident.",
+      "needs_manual_review": false
+    },
+    {
+      "parent_vertical": "Lesiones Personales",
+      "practice_area_name": "Lesiones catastróficas",
+      "display_name": "Lesiones catastróficas",
+      "normalized_id": "lp_lesiones_catastroficas",
+      "synonyms": [
+        "abogado de lesiones catastróficas",
+        "abogados de lesiones catastróficas",
+        "lesiones catastróficas",
+        "catastrófica",
+        "catastroficas"
+      ],
+      "base_keyword_roots": [
+        "abogado de lesiones catastróficas",
+        "abogados de lesiones catastróficas"
+      ],
+      "local_keyword_patterns": [
+        "abogado de lesiones catastróficas en {location}",
+        "{location} abogado de lesiones catastróficas",
+        "abogados de lesiones catastróficas en {location}",
+        "{location} abogados de lesiones catastróficas"
+      ],
+      "national_keyword_patterns": [
+        "abogado de lesiones catastróficas",
+        "abogados de lesiones catastróficas"
+      ],
+      "examples_found_in_money_terms": [
+        "abogado de lesiones catastróficas"
+      ],
+      "notes": "Spanish catastrophic injury.",
+      "needs_manual_review": false
+    },
+    {
+      "parent_vertical": "Sexual Abuse",
+      "practice_area_name": "Sexual Abuse",
+      "display_name": "Sexual Abuse",
+      "normalized_id": "sa_sexual_abuse",
+      "synonyms": [
+        "sexual abuse lawyer",
+        "sexual assault lawyer",
+        "abuse attorney"
+      ],
+      "base_keyword_roots": [
+        "sexual abuse lawyer",
+        "sexual abuse attorney",
+        "sexual assault lawyer"
+      ],
+      "local_keyword_patterns": [
+        "sexual abuse lawyer {location}",
+        "{location} sexual abuse lawyer",
+        "sexual abuse attorney {location}",
+        "{location} sexual abuse attorney",
+        "sexual assault lawyer {location}",
+        "{location} sexual assault lawyer"
+      ],
+      "national_keyword_patterns": [
+        "sexual abuse lawyer",
+        "sexual abuse attorney",
+        "sexual assault lawyer"
+      ],
+      "examples_found_in_money_terms": [
+        "california sexual abuse lawyer",
+        "new york sexual abuse lawyer",
+        "florida sexual abuse lawyer"
+      ],
+      "notes": "General sexual abuse — plaintiff-side civil claims.",
+      "needs_manual_review": false
+    },
+    {
+      "parent_vertical": "Sexual Abuse",
+      "practice_area_name": "Child Sexual Abuse",
+      "display_name": "Child Sexual Abuse",
+      "normalized_id": "sa_child_sexual_abuse",
+      "synonyms": [
+        "child sexual abuse lawyer",
+        "minor sexual abuse attorney",
+        "child abuse lawyer"
+      ],
+      "base_keyword_roots": [
+        "child sexual abuse lawyer",
+        "child sexual abuse attorney"
+      ],
+      "local_keyword_patterns": [
+        "child sexual abuse lawyer {location}",
+        "{location} child sexual abuse lawyer",
+        "child sexual abuse attorney {location}",
+        "{location} child sexual abuse attorney"
+      ],
+      "national_keyword_patterns": [
+        "child sexual abuse lawyer",
+        "child sexual abuse attorney"
+      ],
+      "examples_found_in_money_terms": [
+        "new york child sexual abuse lawyer",
+        "orange county child sexual abuse lawyer",
+        "buffalo child sexual abuse lawyer"
+      ],
+      "notes": "",
+      "needs_manual_review": false
+    },
+    {
+      "parent_vertical": "Sexual Abuse",
+      "practice_area_name": "Clergy Sexual Abuse",
+      "display_name": "Clergy Sexual Abuse",
+      "normalized_id": "sa_clergy_sexual_abuse",
+      "synonyms": [
+        "clergy abuse lawyer",
+        "clergy sexual abuse attorney",
+        "priest sexual abuse lawyer",
+        "religious abuse lawyer"
+      ],
+      "base_keyword_roots": [
+        "clergy sexual abuse lawyer",
+        "clergy sexual abuse attorney",
+        "clergy abuse lawyer",
+        "clergy abuse attorney"
+      ],
+      "local_keyword_patterns": [
+        "clergy sexual abuse lawyer {location}",
+        "{location} clergy sexual abuse lawyer",
+        "clergy sexual abuse attorney {location}",
+        "{location} clergy sexual abuse attorney",
+        "clergy abuse lawyer {location}",
+        "{location} clergy abuse lawyer",
+        "clergy abuse attorney {location}",
+        "{location} clergy abuse attorney"
+      ],
+      "national_keyword_patterns": [
+        "clergy sexual abuse lawyer",
+        "clergy sexual abuse attorney",
+        "clergy abuse lawyer",
+        "clergy abuse attorney"
+      ],
+      "examples_found_in_money_terms": [
+        "los angeles clergy sexual abuse lawyer",
+        "san diego clergy abuse lawyer",
+        "new york clergy abuse lawyer",
+        "kansas clergy sexual abuse lawyer"
+      ],
+      "notes": "Covers both 'clergy sexual abuse' and 'clergy abuse' variants.",
+      "needs_manual_review": false
+    },
+    {
+      "parent_vertical": "Sexual Abuse",
+      "practice_area_name": "Church Sexual Abuse",
+      "display_name": "Church Sexual Abuse",
+      "normalized_id": "sa_church_sexual_abuse",
+      "synonyms": [
+        "church sexual abuse lawyer",
+        "church abuse attorney"
+      ],
+      "base_keyword_roots": [
+        "church sexual abuse lawyer",
+        "church sexual abuse attorney"
+      ],
+      "local_keyword_patterns": [
+        "church sexual abuse lawyer {location}",
+        "{location} church sexual abuse lawyer",
+        "church sexual abuse attorney {location}",
+        "{location} church sexual abuse attorney"
+      ],
+      "national_keyword_patterns": [
+        "church sexual abuse lawyer",
+        "church sexual abuse attorney"
+      ],
+      "examples_found_in_money_terms": [],
+      "notes": "",
+      "needs_manual_review": false
+    },
+    {
+      "parent_vertical": "Sexual Abuse",
+      "practice_area_name": "Catholic Church Sexual Abuse",
+      "display_name": "Catholic Church Sexual Abuse",
+      "normalized_id": "sa_catholic_church_sexual_abuse",
+      "synonyms": [
+        "catholic church sexual abuse lawyer",
+        "catholic abuse attorney",
+        "diocese abuse lawyer"
+      ],
+      "base_keyword_roots": [
+        "catholic church sexual abuse lawyer",
+        "catholic church sexual abuse attorney"
+      ],
+      "local_keyword_patterns": [
+        "catholic church sexual abuse lawyer {location}",
+        "{location} catholic church sexual abuse lawyer",
+        "catholic church sexual abuse attorney {location}",
+        "{location} catholic church sexual abuse attorney"
+      ],
+      "national_keyword_patterns": [
+        "catholic church sexual abuse lawyer",
+        "catholic church sexual abuse attorney"
+      ],
+      "examples_found_in_money_terms": [],
+      "notes": "",
+      "needs_manual_review": false
+    },
+    {
+      "parent_vertical": "Sexual Abuse",
+      "practice_area_name": "School Sexual Abuse",
+      "display_name": "School Sexual Abuse",
+      "normalized_id": "sa_school_sexual_abuse",
+      "synonyms": [
+        "school sexual abuse lawyer",
+        "school abuse attorney",
+        "teacher sexual abuse lawyer"
+      ],
+      "base_keyword_roots": [
+        "school sexual abuse lawyer",
+        "school sexual abuse attorney"
+      ],
+      "local_keyword_patterns": [
+        "school sexual abuse lawyer {location}",
+        "{location} school sexual abuse lawyer",
+        "school sexual abuse attorney {location}",
+        "{location} school sexual abuse attorney"
+      ],
+      "national_keyword_patterns": [
+        "school sexual abuse lawyer",
+        "school sexual abuse attorney"
+      ],
+      "examples_found_in_money_terms": [
+        "orange county school sexual abuse lawyers",
+        "niagara falls school sexual abuse lawyer",
+        "buffalo school sexual abuse lawyer"
+      ],
+      "notes": "",
+      "needs_manual_review": false
+    },
+    {
+      "parent_vertical": "Sexual Abuse",
+      "practice_area_name": "Foster Care Sexual Abuse",
+      "display_name": "Foster Care Sexual Abuse",
+      "normalized_id": "sa_foster_care_sexual_abuse",
+      "synonyms": [
+        "foster care sexual abuse lawyer",
+        "foster care abuse attorney"
+      ],
+      "base_keyword_roots": [
+        "foster care sexual abuse lawyer",
+        "foster care sexual abuse attorney"
+      ],
+      "local_keyword_patterns": [
+        "foster care sexual abuse lawyer {location}",
+        "{location} foster care sexual abuse lawyer",
+        "foster care sexual abuse attorney {location}",
+        "{location} foster care sexual abuse attorney"
+      ],
+      "national_keyword_patterns": [
+        "foster care sexual abuse lawyer",
+        "foster care sexual abuse attorney"
+      ],
+      "examples_found_in_money_terms": [
+        "orange county foster care sexual abuse lawyer"
+      ],
+      "notes": "",
+      "needs_manual_review": false
+    },
+    {
+      "parent_vertical": "Sexual Abuse",
+      "practice_area_name": "Nursing Home Sexual Abuse",
+      "display_name": "Nursing Home Sexual Abuse",
+      "normalized_id": "sa_nursing_home_sexual_abuse",
+      "synonyms": [
+        "nursing home sexual abuse lawyer",
+        "elder care sexual abuse attorney"
+      ],
+      "base_keyword_roots": [
+        "nursing home sexual abuse lawyer",
+        "nursing home sexual abuse attorney"
+      ],
+      "local_keyword_patterns": [
+        "nursing home sexual abuse lawyer {location}",
+        "{location} nursing home sexual abuse lawyer",
+        "nursing home sexual abuse attorney {location}",
+        "{location} nursing home sexual abuse attorney"
+      ],
+      "national_keyword_patterns": [
+        "nursing home sexual abuse lawyer",
+        "nursing home sexual abuse attorney"
+      ],
+      "examples_found_in_money_terms": [
+        "pittsburgh nursing home sexual abuse lawyer",
+        "philadelphia nursing home sexual abuse lawyer"
+      ],
+      "notes": "Distinct from general nursing home abuse — specifically sexual abuse in care facilities.",
+      "needs_manual_review": false
+    },
+    {
+      "parent_vertical": "Sexual Abuse",
+      "practice_area_name": "Elder Sexual Abuse",
+      "display_name": "Elder Sexual Abuse",
+      "normalized_id": "sa_elder_sexual_abuse",
+      "synonyms": [
+        "elder sexual abuse lawyer",
+        "senior sexual abuse attorney"
+      ],
+      "base_keyword_roots": [
+        "elder sexual abuse lawyer",
+        "elder sexual abuse attorney"
+      ],
+      "local_keyword_patterns": [
+        "elder sexual abuse lawyer {location}",
+        "{location} elder sexual abuse lawyer",
+        "elder sexual abuse attorney {location}",
+        "{location} elder sexual abuse attorney"
+      ],
+      "national_keyword_patterns": [
+        "elder sexual abuse lawyer",
+        "elder sexual abuse attorney"
+      ],
+      "examples_found_in_money_terms": [],
+      "notes": "",
+      "needs_manual_review": false
+    },
+    {
+      "parent_vertical": "Sexual Abuse",
+      "practice_area_name": "Childhood Sexual Abuse",
+      "display_name": "Childhood Sexual Abuse",
+      "normalized_id": "sa_childhood_sexual_abuse",
+      "synonyms": [
+        "childhood sexual abuse lawyer",
+        "childhood abuse attorney",
+        "survivor sexual abuse lawyer"
+      ],
+      "base_keyword_roots": [
+        "childhood sexual abuse lawyer",
+        "childhood sexual abuse attorney"
+      ],
+      "local_keyword_patterns": [
+        "childhood sexual abuse lawyer {location}",
+        "{location} childhood sexual abuse lawyer",
+        "childhood sexual abuse attorney {location}",
+        "{location} childhood sexual abuse attorney"
+      ],
+      "national_keyword_patterns": [
+        "childhood sexual abuse lawyer",
+        "childhood sexual abuse attorney"
+      ],
+      "examples_found_in_money_terms": [],
+      "notes": "Covers adult survivors of childhood sexual abuse.",
+      "needs_manual_review": false
+    }
+  ]
+};
+
+/* =========================================================
+   END CORPUS DATA — JavaScript application code below.
+   ========================================================= */
+var LEGAL_KEYWORD_CORPUS = CORPUS_DATA.LEGAL_KEYWORD_CORPUS;
+
+/* Vertical display order */
+var VERT_ORDER = [
+  "Personal Injury",
+  "Lesiones Personales",
+  "Sexual Abuse",
+  "Family Law",
+  "Criminal Defense",
+  "Estate Planning / Probate",
+  "Business Law / Commercial Litigation",
+  "Employment Law",
+  "Immigration",
+  "Mass Tort / Class Action / Product Injury",
+  "Professional License Defense"
+];
+
+/* Vertical display label — all verticals now use their own name */
+function vertLabel(v) {
+  return v;
+}
+
+/* ── Application state ── */
+var S = {
+  locMode: "local",
+  loc: "",
+  selVerts: [],
+  selected: [],
+  query: "",
+  lastResults: null
+};
+
+/* ── Helpers ── */
+function includes(arr, val) {
+  for (var i = 0; i < arr.length; i++) { if (arr[i] === val) return true; }
+  return false;
+}
+function remove(arr, val) {
+  var out = [];
+  for (var i = 0; i < arr.length; i++) { if (arr[i] !== val) out.push(arr[i]); }
+  return out;
+}
+function esc(s) {
+  return String(s || "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+}
+
+/* ── Group corpus by parent_vertical ── */
+function groupBy(corpus) {
+  var g = {};
+  for (var i = 0; i < corpus.length; i++) {
+    var e = corpus[i];
+    var v = e.parent_vertical;
+    if (!g[v]) g[v] = [];
+    g[v].push(e);
+  }
+  return g;
+}
+
+/* Return sorted vertical names */
+function sortedVerts(g) {
+  var ord = [];
+  for (var i = 0; i < VERT_ORDER.length; i++) {
+    if (g[VERT_ORDER[i]]) ord.push(VERT_ORDER[i]);
+  }
+  var keys = Object.keys(g);
+  for (var j = 0; j < keys.length; j++) {
+    if (!includes(VERT_ORDER, keys[j])) ord.push(keys[j]);
+  }
+  return ord;
+}
+
+/* Does entry match the search query? */
+function matchQ(e, q) {
+  if (!q) return true;
+  var qL = q.toLowerCase();
+  var parts = [
+    e.parent_vertical || "",
+    e.practice_area_name || "",
+    e.display_name || "",
+    e.normalized_id || "",
+    e.notes || ""
+  ];
+  var arrs = [
+    e.synonyms || [],
+    e.base_keyword_roots || [],
+    e.local_keyword_patterns || [],
+    e.national_keyword_patterns || []
+  ];
+  for (var i = 0; i < arrs.length; i++) {
+    for (var j = 0; j < arrs[i].length; j++) {
+      parts.push(arrs[i][j] || "");
+    }
+  }
+  var hay = parts.join(" ").toLowerCase();
+  return hay.indexOf(qL) !== -1;
+}
+
+/* ── Init summary card ── */
+function initSummary() {
+  var m = CORPUS_DATA.meta || {};
+  var total = m.total_practice_areas || LEGAL_KEYWORD_CORPUS.length;
+  var terms = m.total_unique_terms_extracted || 0;
+  var verts = m.verticals_found || [];
+
+  document.getElementById("sPAs").textContent   = total;
+  document.getElementById("sTerms").textContent = terms ? terms.toLocaleString() : "2,406";
+  document.getElementById("sVerts").textContent = verts.length || 11;
+
+  var labels = [];
+  for (var i = 0; i < verts.length; i++) labels.push(vertLabel(verts[i]));
+  document.getElementById("sVertList").textContent = labels.join(" · ");
+}
+
+/* ── Render vertical chips ── */
+function renderChips() {
+  var groups = groupBy(LEGAL_KEYWORD_CORPUS);
+  var verts  = sortedVerts(groups);
+  var box    = document.getElementById("vertChips");
+  var html   = "";
+  for (var i = 0; i < verts.length; i++) {
+    var v    = verts[i];
+    var cnt  = groups[v].length;
+    var act  = includes(S.selVerts, v);
+    var name = esc(vertLabel(v));
+    html += '<button class="vchip' + (act ? ' active' : '') + '" data-vert="' + esc(v) + '">';
+    html += name + ' <span class="vcnt">(' + cnt + ')</span>';
+    html += '</button>';
+  }
+  box.innerHTML = html;
+
+  /* Attach click listeners */
+  var chips = box.querySelectorAll(".vchip");
+  for (var j = 0; j < chips.length; j++) {
+    chips[j].addEventListener("click", function() {
+      toggleVert(this.getAttribute("data-vert"));
+    });
+  }
+}
+
+/* ── Toggle a vertical chip ── */
+function toggleVert(v) {
+  if (includes(S.selVerts, v)) {
+    /* Deselect: remove vertical, clear its PA selections */
+    S.selVerts = remove(S.selVerts, v);
+    var grp = groupBy(LEGAL_KEYWORD_CORPUS)[v] || [];
+    for (var i = 0; i < grp.length; i++) {
+      S.selected = remove(S.selected, grp[i].normalized_id);
+    }
+  } else {
+    S.selVerts.push(v);
+  }
+  renderChips();
+  renderPAs();
+  updSelBar();
+}
+
+/* ── Render practice area panels ── */
+function renderPAs() {
+  var box = document.getElementById("paBox");
+  var q   = S.query;
+
+  /* SEARCH MODE: show matching PAs from any vertical */
+  if (q) {
+    var matches = [];
+    for (var i = 0; i < LEGAL_KEYWORD_CORPUS.length; i++) {
+      if (matchQ(LEGAL_KEYWORD_CORPUS[i], q)) matches.push(LEGAL_KEYWORD_CORPUS[i]);
+    }
+    if (!matches.length) {
+      box.innerHTML = '<div class="empty-state"><span class="es-icon">&#128269;</span>'
+        + '<span class="es-txt">No practice areas match "' + esc(q) + '".</span>'
+        + '<span class="es-sub">Try: personal injury, DUI, abogado, estate planning, medical malpractice</span></div>';
+      return;
+    }
+    var groups = groupBy(matches);
+    var verts  = sortedVerts(groups);
+    var html   = '<div class="pa-panels">';
+    for (var vi = 0; vi < verts.length; vi++) {
+      html += buildPanel(verts[vi], groups[verts[vi]]);
+    }
+    html += '</div>';
+    box.innerHTML = html;
+    attachPAListeners();
+    return;
+  }
+
+  /* NORMAL MODE: show panels for selected verticals only */
+  if (!S.selVerts.length) {
+    box.innerHTML = '<div class="empty-state">'
+      + '<span class="es-icon">&#9757;</span>'
+      + '<span class="es-txt">Select a vertical above to browse practice areas.</span>'
+      + '</div>';
+    return;
+  }
+
+  var allGroups = groupBy(LEGAL_KEYWORD_CORPUS);
+  /* Sort by VERT_ORDER */
+  var sorted = [];
+  for (var oi = 0; oi < VERT_ORDER.length; oi++) {
+    if (includes(S.selVerts, VERT_ORDER[oi])) sorted.push(VERT_ORDER[oi]);
+  }
+  /* Add any not in VERT_ORDER */
+  for (var si = 0; si < S.selVerts.length; si++) {
+    if (!includes(VERT_ORDER, S.selVerts[si])) sorted.push(S.selVerts[si]);
+  }
+
+  var html = '<div class="pa-panels">';
+  for (var pi = 0; pi < sorted.length; pi++) {
+    var entries = allGroups[sorted[pi]] || [];
+    html += buildPanel(sorted[pi], entries);
+  }
+  html += '</div>';
+  box.innerHTML = html;
+  attachPAListeners();
+}
+
+/* Build a single PA panel HTML string */
+function buildPanel(v, entries) {
+  var selCnt = 0;
+  for (var i = 0; i < entries.length; i++) {
+    if (includes(S.selected, entries[i].normalized_id)) selCnt++;
+  }
+  var vJ   = esc(v);
+  var name = esc(vertLabel(v));
+
+  var h = '<div class="pa-panel">';
+  h += '<div class="pa-panel-hdr">';
+  h += '<span class="pa-panel-name">' + name + '</span>';
+  if (selCnt > 0) {
+    h += '<span class="sel-badge">' + selCnt + ' &#10003;</span>';
+  }
+  h += '<button class="btn btn-ghost" data-selvert="' + vJ + '">Select All</button>';
+  h += '<button class="btn btn-ghost" data-clrvert="' + vJ + '">Clear</button>';
+  h += '</div>';
+  h += '<div class="pa-panel-body"><div class="pa-grid">';
+
+  for (var j = 0; j < entries.length; j++) {
+    var e   = entries[j];
+    var chk = includes(S.selected, e.normalized_id);
+    var lbl = esc(e.display_name || e.practice_area_name);
+    var nid = esc(e.normalized_id);
+    h += '<label class="pa-cb">';
+    h += '<input type="checkbox" data-nid="' + nid + '"' + (chk ? ' checked' : '') + '>';
+    h += '<span class="lbl">' + lbl + '</span>';
+    if (e.needs_manual_review) {
+      h += '<span class="rev-dot" title="Needs manual review"></span>';
+    }
+    h += '</label>';
+  }
+
+  h += '</div></div></div>';
+  return h;
+}
+
+/* Attach event listeners to checkboxes and Select All / Clear buttons inside paBox */
+function attachPAListeners() {
+  var box = document.getElementById("paBox");
+
+  /* Checkboxes */
+  var cbs = box.querySelectorAll('input[type=checkbox][data-nid]');
+  for (var i = 0; i < cbs.length; i++) {
+    cbs[i].addEventListener("change", function() {
+      var nid = this.getAttribute("data-nid");
+      if (this.checked) {
+        if (!includes(S.selected, nid)) S.selected.push(nid);
+      } else {
+        S.selected = remove(S.selected, nid);
+      }
+      updSelBar();
+      /* Re-render to update badge count */
+      renderPAs();
+    });
+  }
+
+  /* Select All buttons */
+  var selBtns = box.querySelectorAll('[data-selvert]');
+  for (var j = 0; j < selBtns.length; j++) {
+    selBtns[j].addEventListener("click", function(e) {
+      e.preventDefault();
+      var v   = this.getAttribute("data-selvert");
+      var grp = groupBy(LEGAL_KEYWORD_CORPUS)[v] || [];
+      for (var k = 0; k < grp.length; k++) {
+        var nid = grp[k].normalized_id;
+        if (!includes(S.selected, nid)) S.selected.push(nid);
+      }
+      updSelBar();
+      renderPAs();
+    });
+  }
+
+  /* Clear buttons */
+  var clrBtns = box.querySelectorAll('[data-clrvert]');
+  for (var l = 0; l < clrBtns.length; l++) {
+    clrBtns[l].addEventListener("click", function(e) {
+      e.preventDefault();
+      var v   = this.getAttribute("data-clrvert");
+      var grp = groupBy(LEGAL_KEYWORD_CORPUS)[v] || [];
+      for (var m = 0; m < grp.length; m++) {
+        S.selected = remove(S.selected, grp[m].normalized_id);
+      }
+      updSelBar();
+      renderPAs();
+    });
+  }
+}
+
+/* ── Update selection bar ── */
+function updSelBar() {
+  var n   = S.selected.length;
+  var bar = document.getElementById("selBar");
+  var lbl = document.getElementById("selLbl");
+  var gsc = document.getElementById("gSelCnt");
+  if (n > 0 || S.selVerts.length > 0) {
+    bar.classList.add("show");
+  } else {
+    bar.classList.remove("show");
+  }
+  lbl.textContent = n + " practice area" + (n !== 1 ? "s" : "") + " selected";
+  gsc.textContent = n > 0 ? n + " area" + (n !== 1 ? "s" : "") + " selected" : "";
+}
+
+/* ── Keyword generation ── */
+function genFor(entry, loc, locMode, opts) {
+  var isSpanish = entry.parent_vertical === "Español / Spanish";
+  var kws = [];
+  var noPatterns = false;
+
+  if (locMode === "local") {
+    var lp = entry.local_keyword_patterns || [];
+    if (lp.length > 0) {
+      var locLow = loc.trim().toLowerCase();
+      for (var i = 0; i < lp.length; i++) {
+        kws.push(lp[i].replace(/\{location\}/g, locLow).trim().replace(/\s+/g, " "));
+      }
+    } else {
+      noPatterns = true;
+    }
+  } else {
+    /* National mode: use national_keyword_patterns only, never insert location */
+    var np2 = entry.national_keyword_patterns || [];
+    if (np2.length > 0) {
+      for (var k = 0; k < np2.length; k++) {
+        kws.push(np2[k].trim().replace(/\s+/g, " "));
+      }
+    } else {
+      noPatterns = true;
+    }
+  }
+
+  /* Near-me: base roots only, never for Spanish */
+  if (opts.nearMe && !isSpanish && !noPatterns) {
+    var roots = entry.base_keyword_roots || [];
+    for (var r = 0; r < roots.length; r++) {
+      kws.push(roots[r].trim() + " near me");
+    }
+  }
+
+  /* Validate — strip broken keywords */
+  var clean = [];
+  for (var v = 0; v < kws.length; v++) {
+    var kw = kws[v];
+    if (!kw || kw.length < 3) continue;
+    if (kw.indexOf("{location}") !== -1) continue;
+    if (/undefined|null|\[object/i.test(kw)) continue;
+    /* Protect against "national lawyer", "lawyer national" etc. */
+    if (/\bnational\s+(lawyer|attorney|abogado)\b/i.test(kw)) continue;
+    if (/\b(lawyer|attorney|abogado)\s+national\b/i.test(kw)) continue;
+    if (/\babogado\s+nacional\b/i.test(kw)) continue;
+    clean.push(kw);
+  }
+
+  return { kws: clean, noPatterns: noPatterns };
+}
+
+/* ── Main generate function ── */
+function generate() {
+  clearAlerts();
+
+  var locMode = "local";
+  var radios  = document.querySelectorAll("input[name=lmode]");
+  for (var ri = 0; ri < radios.length; ri++) {
+    if (radios[ri].checked) { locMode = radios[ri].value; break; }
+  }
+  var loc = document.getElementById("locInp").value.trim();
+
+  /* Validation */
+  if (S.selected.length === 0) {
+    showAlert("error", "Please select at least one practice area before generating."); return;
+  }
+  if (locMode === "local" && !loc) {
+    showAlert("error", "Please enter a location for Local / Geo mode."); return;
+  }
+
+  var opts = {
+    dedupe:   document.getElementById("oDedupe").checked,
+    grouped:  document.getElementById("oGrouped").checked,
+
+    nearMe:   document.getElementById("oNearMe").checked
+  };
+
+  /* Gather selected entries */
+  var entries = [];
+  for (var i = 0; i < LEGAL_KEYWORD_CORPUS.length; i++) {
+    if (includes(S.selected, LEGAL_KEYWORD_CORPUS[i].normalized_id)) {
+      entries.push(LEGAL_KEYWORD_CORPUS[i]);
+    }
+  }
+  if (!entries.length) {
+    showAlert("warning", "No matching practice areas found."); return;
+  }
+
+  var results  = [];
+  var flatAll  = [];
+
+  for (var j = 0; j < entries.length; j++) {
+    var res = genFor(entries[j], loc, locMode, opts);
+    var kws = res.kws;
+    if (opts.dedupe) {
+      var seen = {}; var deduped = [];
+      for (var d = 0; d < kws.length; d++) {
+        if (!seen[kws[d]]) { seen[kws[d]] = true; deduped.push(kws[d]); }
+      }
+      kws = deduped;
+    }
+    results.push({ e: entries[j], kws: kws, noPatterns: res.noPatterns });
+    for (var f = 0; f < kws.length; f++) flatAll.push(kws[f]);
+  }
+
+  var allKws = flatAll;
+  if (opts.dedupe) {
+    var seenAll = {}; var dedupeAll = [];
+    for (var da = 0; da < allKws.length; da++) {
+      if (!seenAll[allKws[da]]) { seenAll[allKws[da]] = true; dedupeAll.push(allKws[da]); }
+    }
+    allKws = dedupeAll;
+  }
+
+  S.lastResults = { results: results, allKws: allKws, locMode: locMode, loc: loc, opts: opts };
+  renderOut(S.lastResults);
+}
+
+/* ── Render output ── */
+function renderOut(data) {
+  var results = data.results;
+  var allKws  = data.allKws;
+  var locMode = data.locMode;
+  var loc     = data.loc;
+
+  document.getElementById("oNum").textContent  = allKws.length.toLocaleString();
+  document.getElementById("oMode").textContent =
+    locMode === "local" ? "\uD83D\uDCCD " + loc : "\uD83C\uDF10 National / No Geo";
+  document.getElementById("oAreas").textContent =
+    results.length + " practice area" + (results.length !== 1 ? "s" : "");
+
+  var html = "";
+  for (var i = 0; i < results.length; i++) {
+    var r    = results[i];
+    var e    = r.e;
+    var kws  = r.kws;
+    var name = esc(e.display_name || e.practice_area_name);
+    var vn   = esc(vertLabel(e.parent_vertical));
+
+    html += '<div class="out-grp">';
+    html += '<div class="out-grp-hdr">';
+    html += '<span class="out-grp-name">' + name + '</span>';
+    html += '<span class="out-grp-vert">' + vn + '</span>';
+    if (e.needs_manual_review) {
+      html += '<span class="rev-badge">&#9888; Needs Review</span>';
+    }
+    if (e.notes) {
+      html += '<button class="notes-btn" data-noteid="note_' + i + '">&#8505; Notes</button>';
+    }
+    html += '<button class="btn btn-ghost grp-copy-btn" data-grpidx="' + i + '">&#9014; Copy</button>';
+    html += '</div>';
+
+    if (e.notes) {
+      html += '<div class="out-notes" id="note_' + i + '">' + esc(e.notes) + '</div>';
+    }
+
+    if (r.noPatterns && kws.length === 0) {
+      var why = locMode === "local"
+        ? 'No local keyword patterns found for this practice area.'
+        : "No national keyword patterns found for this practice area.";
+      html += '<div class="out-empty-msg">&#9888; ' + esc(why) + '</div>';
+    } else if (kws.length === 0) {
+      html += '<div class="out-empty-msg">No keywords generated for this practice area.</div>';
+    } else {
+      html += '<div class="out-kws">' + esc(kws.join("\n")) + '</div>';
+    }
+
+    html += '</div>';
+  }
+
+  if (!html) {
+    html = '<div style="text-align:center;padding:32px;color:var(--muted);font-size:13px">No keywords generated.</div>';
+  }
+
+  var body = document.getElementById("outBody");
+  body.innerHTML = html;
+
+  /* Attach notes toggles */
+  var nbtns = body.querySelectorAll(".notes-btn");
+  for (var nb = 0; nb < nbtns.length; nb++) {
+    nbtns[nb].addEventListener("click", function() {
+      var id = this.getAttribute("data-noteid");
+      var el = document.getElementById(id);
+      if (el) el.classList.toggle("show");
+    });
+  }
+
+  /* Attach copy group buttons */
+  var cpbtns = body.querySelectorAll(".grp-copy-btn");
+  for (var cp = 0; cp < cpbtns.length; cp++) {
+    cpbtns[cp].addEventListener("click", function() {
+      var idx = parseInt(this.getAttribute("data-grpidx"), 10);
+      if (S.lastResults && S.lastResults.results[idx]) {
+        cpText(S.lastResults.results[idx].kws.join("\n"));
+        flashBtn(this, "\u2713 Copied!");
+      }
+    });
+  }
+
+  document.getElementById("outWrap").classList.add("show");
+  setTimeout(function() {
+    document.getElementById("outWrap").scrollIntoView({ behavior: "smooth", block: "start" });
+  }, 80);
+}
+
+/* ── Copy helpers ── */
+function cpText(t) {
+  if (navigator.clipboard && window.isSecureContext) {
+    navigator.clipboard.writeText(t).catch(function() { cpFallback(t); });
+  } else {
+    cpFallback(t);
+  }
+}
+function cpFallback(t) {
+  var ta = document.createElement("textarea");
+  ta.value = t;
+  ta.style.cssText = "position:fixed;opacity:0;top:0;left:0";
+  document.body.appendChild(ta);
+  ta.focus(); ta.select();
+  try { document.execCommand("copy"); } catch(ex) {}
+  document.body.removeChild(ta);
+}
+function flashBtn(btn, msg) {
+  var orig = btn.textContent;
+  btn.textContent = msg;
+  setTimeout(function() { btn.textContent = orig; }, 1600);
+}
+
+/* ── Copy all ── */
+function copyAll() {
+  if (!S.lastResults) return;
+  var results = S.lastResults.results;
+  var allKws  = S.lastResults.allKws;
+  var opts    = S.lastResults.opts;
+  var txt;
+  if (opts.grouped) {
+    var parts = [];
+    for (var i = 0; i < results.length; i++) {
+      if (results[i].kws.length) {
+        var hd = "# " + (results[i].e.display_name || results[i].e.practice_area_name)
+               + " (" + vertLabel(results[i].e.parent_vertical) + ")";
+        parts.push(hd + "\n" + results[i].kws.join("\n"));
+      }
+    }
+    txt = parts.join("\n\n");
+  } else {
+    txt = allKws.join("\n");
+  }
+  cpText(txt);
+  flashBtn(document.getElementById("copyAllBtn"), "\u2713 Copied!");
+}
+
+/* ── Download .txt ── */
+function dlTxt() {
+  if (!S.lastResults) return;
+  var results = S.lastResults.results;
+  var locMode = S.lastResults.locMode;
+  var loc     = S.lastResults.loc;
+  var lines   = ["Legal Money Terms Export", "Generated: " + new Date().toLocaleDateString()];
+  lines.push("Mode: " + (locMode === "local" ? "Local -- " + loc : "National / No Geo"));
+  lines.push("--------------------------------------------------");
+  lines.push("");
+  for (var i = 0; i < results.length; i++) {
+    if (results[i].kws.length) {
+      lines.push("# " + (results[i].e.display_name || results[i].e.practice_area_name));
+      lines.push("# Vertical: " + vertLabel(results[i].e.parent_vertical));
+      for (var j = 0; j < results[i].kws.length; j++) lines.push(results[i].kws[j]);
+      lines.push("");
+    }
+  }
+  var txt  = lines.join("\n");
+  var lstr = locMode === "local" ? loc.replace(/\s+/g, "-") : "national";
+  var fn   = "legal-keywords-" + lstr + "-" + new Date().toISOString().slice(0, 10) + ".txt";
+  var blob = new Blob([txt], { type: "text/plain;charset=utf-8" });
+  var url  = URL.createObjectURL(blob);
+  var a    = document.createElement("a");
+  a.href = url; a.download = fn;
+  document.body.appendChild(a); a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+/* ── Clear output ── */
+function clearOut() {
+  document.getElementById("outWrap").classList.remove("show");
+  document.getElementById("outBody").innerHTML = "";
+  S.lastResults = null;
+}
+
+/* ── Alert helpers ── */
+function showAlert(type, msg) {
+  var box = document.getElementById("alertBox");
+  var d   = document.createElement("div");
+  d.className = "alert alert-" + type;
+  d.textContent = (type === "error" ? "\u2716 " : type === "warning" ? "\u26A0 " : "\u2139 ") + msg;
+  box.appendChild(d);
+  d.scrollIntoView({ behavior: "smooth", block: "nearest" });
+  setTimeout(function() { if (d.parentNode) d.parentNode.removeChild(d); }, 9000);
+}
+function clearAlerts() {
+  document.getElementById("alertBox").innerHTML = "";
+}
+
+/* ── Event wiring ── */
+/* Location mode toggle */
+var lmodeRadios = document.querySelectorAll("input[name=lmode]");
+for (var lr = 0; lr < lmodeRadios.length; lr++) {
+  lmodeRadios[lr].addEventListener("change", function() {
+    var v       = this.value;
+    S.locMode   = v;
+    var locBlk  = document.getElementById("locBlock");
+    var natMsg  = document.getElementById("natMsg");
+    if (v === "national") {
+      locBlk.classList.add("hidden");
+      natMsg.classList.add("show");
+    } else {
+      locBlk.classList.remove("hidden");
+      natMsg.classList.remove("show");
+    }
+  });
+}
+
+/* Location input */
+document.getElementById("locInp").addEventListener("input", function() {
+  S.loc = this.value;
+});
+
+/* Search input */
+document.getElementById("srchInp").addEventListener("input", function() {
+  S.query = this.value.trim();
+  var clr = document.getElementById("srchClear");
+  if (S.query.length > 0) { clr.classList.add("show"); } else { clr.classList.remove("show"); }
+  renderPAs();
+});
+
+/* Search clear button */
+document.getElementById("srchClear").addEventListener("click", function() {
+  document.getElementById("srchInp").value = "";
+  S.query = "";
+  this.classList.remove("show");
+  renderPAs();
+});
+
+/* Clear all selections */
+document.getElementById("clearSelBtn").addEventListener("click", function() {
+  S.selected = [];
+  updSelBar();
+  renderPAs();
+});
+
+/* Generate button */
+document.getElementById("genBtn").addEventListener("click", function() {
+  generate();
+});
+
+/* Copy all button */
+document.getElementById("copyAllBtn").addEventListener("click", function() {
+  copyAll();
+});
+
+/* Download button */
+document.getElementById("dlBtn").addEventListener("click", function() {
+  dlTxt();
+});
+
+/* Clear output button */
+document.getElementById("clearOutBtn").addEventListener("click", function() {
+  clearOut();
+});
+
+/* ── Boot ── */
+initSummary();
+renderChips();
+</script>
+</body>
+</html>
