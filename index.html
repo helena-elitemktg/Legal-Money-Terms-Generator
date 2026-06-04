@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Legal Money Terms Generator</title>
+<title>Legal Keyword Generator</title>
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 :root{
@@ -187,26 +187,13 @@ body{font-family:var(--ff);background:var(--bg);color:var(--txt);font-size:14px;
 <header class="hdr">
   <span style="font-size:20px">&#9878;</span>
   <div>
-    <h1>Legal Money Terms Generator</h1>
-    <p>Generate local, national, English, and Spanish legal keywords from our internal money-term corpus.</p>
+    <h1>Legal Keyword Generator</h1>
+    <p>Generate a complete list of money terms for your practice areas, locations, and target markets.</p>
   </div>
 </header>
 
 <main class="main">
 
-<!-- Summary -->
-<div class="summary">
-  <div class="stat"><span class="stat-v" id="sPAs">111</span><span class="stat-l">Practice Areas</span></div>
-  <div class="sdiv"></div>
-  <div class="stat"><span class="stat-v" id="sTerms">2,406</span><span class="stat-l">Terms in Corpus</span></div>
-  <div class="sdiv"></div>
-  <div class="stat"><span class="stat-v" id="sVerts">10</span><span class="stat-l">Verticals</span></div>
-  <div class="sdiv"></div>
-  <div class="sum-list">
-    <strong>Verticals</strong>
-    <span id="sVertList">Loading...</span>
-  </div>
-</div>
 
 <!-- STEP 1 -->
 <div class="card">
@@ -291,10 +278,6 @@ body{font-family:var(--ff);background:var(--bg);color:var(--txt);font-size:14px;
   </div>
   <div class="card-body">
     <div class="settings-row">
-      <label class="sck">
-        <input type="checkbox" id="oDedupe" checked>
-        <div class="sck-wrap"><span>Deduplicate keywords</span></div>
-      </label>
       <label class="sck">
         <input type="checkbox" id="oGrouped" checked>
         <div class="sck-wrap"><span>Group output by practice area</span></div>
@@ -5283,7 +5266,7 @@ function generate() {
   }
 
   var opts = {
-    dedupe:  document.getElementById("oDedupe").checked,
+    dedupe:  true,  /* always deduplicate */
     grouped: document.getElementById("oGrouped").checked,
     nearMe:  document.getElementById("oNearMe").checked
   };
@@ -5502,7 +5485,7 @@ function dlTxt() {
   var locs     = S.lastResults.locs    || [];
   var locDisp  = S.lastResults.locDisp || "";
   var modeStr  = locMode === "local" ? "Local -- " + locDisp : "National / No Geo";
-  var lines    = ["Legal Money Terms Export", "Generated: " + new Date().toLocaleDateString()];
+  var lines    = ["Legal Keyword Generator — Export", "Generated: " + new Date().toLocaleDateString()];
   lines.push("Mode: " + modeStr);
   lines.push("--------------------------------------------------");
   lines.push("");
@@ -5618,7 +5601,6 @@ document.getElementById("clearOutBtn").addEventListener("click", function() {
 });
 
 /* ── Boot ── */
-initSummary();
 renderChips();
 </script>
 </body>
